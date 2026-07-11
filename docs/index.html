@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexus Prime</title>
+<title>Nexus Prime | Jarvis 2.0</title>
+<script src="https://js.puter.com/v2/"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#050a14;color:#e0e6ed;font-family:'Segoe UI',Arial,sans-serif;padding:20px}
@@ -65,7 +66,7 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 <div class="row"><span style="color:#94a3b8">eBay Global</span><span class="green">Active</span></div>
 <div class="row"><span style="color:#94a3b8">Traffic Forever</span><span class="green">Active</span></div>
 <div class="row"><span style="color:#94a3b8">Tumblr</span><span class="green">Active</span></div>
-<div class="row"><span style="color:#94a3b8">Voice Engine</span><span class="green">Browser TTS</span></div>
+<div class="row"><span style="color:#94a3b8">Voice Engine</span><span class="green">ElevenLabs AI</span></div>
 <div class="row"><span style="color:#94a3b8">Scan Interval</span><span class="cyan">Every 15 min</span></div>
 </div>
 <div class="card">
@@ -113,27 +114,50 @@ var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI
 var stats={clicks:0,ebay:0,re:0,reEmail:0,posts:0,revenue:0};
 var speaking=false,queue=[];
 
-function toggleChat(){var c=document.getElementById("chat-panel");c.classList.toggle("open")}
+function toggleChat(){document.getElementById("chat-panel").classList.toggle("open")}
 
-function speak(text){
+// ElevenLabs natural voice via Puter.js
+async function speak(text){
     addMsg(text);
-    if(!window.speechSynthesis){return}
     if(speaking){queue.push(text);return}
     speaking=true;
     var orb=document.getElementById("orb");
     var st=document.getElementById("speaking-text");
     orb.classList.add("speaking");
     st.style.display="inline";
-    window.speechSynthesis.cancel();
-    var u=new SpeechSynthesisUtterance(text);
-    u.rate=0.9;u.pitch=0.85;u.volume=1;
-    var voices=window.speechSynthesis.getVoices();
-    for(var i=0;i<voices.length;i++){
-        if(voices[i].name.indexOf("Daniel")>-1||voices[i].name.indexOf("David")>-1||voices[i].name.indexOf("Male")>-1||voices[i].name.indexOf("Google UK English Male")>-1){u.voice=voices[i];break}
+    try{
+        var audio=await puter.ai.txt2speech(text,{voice:"Daniel"});
+        var blob=new Blob([audio],{type:"audio/mpeg"});
+        var url=URL.createObjectURL(blob);
+        var player=new Audio(url);
+        player.onended=function(){
+            orb.classList.remove("speaking");
+            st.style.display="none";
+            speaking=false;
+            URL.revokeObjectURL(url);
+            if(queue.length>0){speak(queue.shift())}
+        };
+        player.onerror=function(){
+            orb.classList.remove("speaking");
+            st.style.display="none";
+            speaking=false;
+            if(queue.length>0){speak(queue.shift())}
+        };
+        player.play();
+    }catch(e){
+        // Fallback to browser TTS if Puter fails
+        if(window.speechSynthesis){
+            var u=new SpeechSynthesisUtterance(text);
+            u.rate=0.9;u.pitch=0.85;u.volume=1;
+            u.onend=function(){orb.classList.remove("speaking");st.style.display="none";speaking=false;if(queue.length>0){speak(queue.shift())}};
+            window.speechSynthesis.speak(u);
+        }else{
+            orb.classList.remove("speaking");
+            st.style.display="none";
+            speaking=false;
+            if(queue.length>0){speak(queue.shift())}
+        }
     }
-    u.onend=function(){orb.classList.remove("speaking");st.style.display="none";speaking=false;if(queue.length>0){speak(queue.shift())}};
-    u.onerror=function(){orb.classList.remove("speaking");st.style.display="none";speaking=false;if(queue.length>0){speak(queue.shift())}};
-    window.speechSynthesis.speak(u);
 }
 
 function addMsg(t){var c=document.getElementById("jarvis-messages"),d=document.createElement("div");d.className="msg";d.innerHTML="<span style='color:#0891b2;font-size:9px'>"+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+"</span><br>"+t;c.appendChild(d);c.scrollTop=c.scrollHeight}
@@ -191,23 +215,17 @@ async function init(){
     await loadLogs();
     addLog("All systems LIVE.","success");
     addLog("GitHub Engine: RUNNING every 15 min","success");
-    addLog("Voice Engine: ACTIVE","success");
+    addLog("Voice Engine: ElevenLabs AI ACTIVE","success");
 
-    // Load voices then speak greeting
-    if(window.speechSynthesis){
-        window.speechSynthesis.getVoices();
-        setTimeout(function(){
-            var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";
-            speak(g+" Dennis. Jarvis 2.0 is fully online. "+stats.posts+" posts published so far. Revenue at $"+stats.revenue.toFixed(2)+". All systems green. Click on me anytime for a full report.");
-        },1500);
-    }
+    // Speak greeting after short delay
+    setTimeout(function(){
+        var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";
+        speak(g+" Dennis. Jarvis 2.0 is fully online. "+stats.posts+" posts published so far. Revenue at $"+stats.revenue.toFixed(2)+". All systems green. Click on me anytime for a full report.");
+    },2000);
 
     // Refresh stats every 60 seconds
     setInterval(function(){loadStats()},60000);
 }
-
-// Preload voices
-if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices()}}
 
 init();
 </script>
