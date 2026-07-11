@@ -2,8 +2,10 @@
  * Jarvis 2.0 Nexus Prime - Content Generator
  * 
  * Generates bilingual (EN/FR) Problem-Solution style copy
- * using viral copywriting formulas from Genie AI analysis.
- * No external LLM needed — template-based for reliability and free tier.
+ * using viral copywriting formulas.
+ * 
+ * Posts use HTML format with clickable <a href> links
+ * so users can click through to affiliate products directly.
  */
 
 import {
@@ -43,15 +45,15 @@ const HOOKS_FR = [
 ];
 
 // FTC Disclaimer
-const DISCLAIMER_EN = '⚠️ Buyer Beware: This post contains affiliate links. We may earn a commission at no extra cost to you. Always do your own research before purchasing.';
-const DISCLAIMER_FR = '⚠️ Avis aux acheteurs: Ce post contient des liens affiliés. Nous pouvons gagner une commission sans frais supplémentaires pour vous. Faites toujours vos propres recherches avant d\'acheter.';
+const DISCLAIMER_EN = '<small>⚠️ This post contains affiliate links. We may earn a commission at no extra cost to you.</small>';
+const DISCLAIMER_FR = '<small>⚠️ Ce post contient des liens affiliés. Nous pouvons gagner une commission sans frais supplémentaires pour vous.</small>';
 
 // Hashtags by niche
 const HASHTAGS = {
-  'health-wellness': '#health #wellness #selfcare #healthylifestyle #fitness #wellbeing #natural #organic',
-  'technology': '#tech #gadgets #technology #innovation #smart #productivity #techlife #futuretech',
-  'beauty-skincare': '#beauty #skincare #glowup #skincareroutine #beautytips #selfcare #antiaging #naturalbeauty',
-  'online-education': '#learning #education #onlinelearning #skills #growth #studytips #edtech #knowledge'
+  'health-wellness': '#health #wellness #selfcare #healthylifestyle #fitness #wellbeing',
+  'technology': '#tech #gadgets #technology #innovation #smart #productivity',
+  'beauty-skincare': '#beauty #skincare #glowup #skincareroutine #beautytips #antiaging',
+  'online-education': '#learning #education #onlinelearning #skills #growth #edtech'
 };
 
 /**
@@ -69,38 +71,40 @@ function fillTemplate(template, product) {
 }
 
 /**
- * Generate affiliate product post (bilingual)
+ * Generate affiliate product post (bilingual) — HTML format with clickable links
  */
 function generateAffiliatePost() {
   // Decide: Amazon or ClickBank
   const isClickBank = Math.random() < 0.25; // 25% ClickBank, 75% Amazon
-  
+
   if (isClickBank) {
     const product = getRandomClickBank();
     const hookEn = HOOKS_EN[Math.floor(Math.random() * HOOKS_EN.length)];
     const hookFr = HOOKS_FR[Math.floor(Math.random() * HOOKS_FR.length)];
-    
-    const postEn = `${fillTemplate(hookEn, product)}
 
-❌ PROBLEM: ${product.problem}
-✅ SOLUTION: ${product.solution}
+    const postEn = `<h2>${fillTemplate(hookEn, product)}</h2>
 
-👉 Get it here: ${product.hoplink}
+<p>❌ <strong>PROBLEM:</strong> ${product.problem}</p>
+<p>✅ <strong>SOLUTION:</strong> ${product.solution}</p>
+
+<p>⭐ <strong>${product.title}</strong></p>
+<p>👉 <a href="${product.hoplink}"><strong>Click Here to Get It Now →</strong></a></p>
 
 ${DISCLAIMER_EN}
 
-#affiliatemarketing #deals #recommended`;
+<p>#affiliatemarketing #deals #recommended</p>`;
 
-    const postFr = `${fillTemplate(hookFr, {...product, title: product.titleFr, problem: product.problemFr})}
+    const postFr = `<h2>${fillTemplate(hookFr, {...product, title: product.titleFr, problem: product.problemFr})}</h2>
 
-❌ PROBLÈME: ${product.problemFr}
-✅ SOLUTION: ${product.solutionFr}
+<p>❌ <strong>PROBLÈME:</strong> ${product.problemFr}</p>
+<p>✅ <strong>SOLUTION:</strong> ${product.solutionFr}</p>
 
-👉 Obtenez-le ici: ${product.hoplink}
+<p>⭐ <strong>${product.titleFr}</strong></p>
+<p>👉 <a href="${product.hoplink}"><strong>Cliquez Ici pour l'Obtenir →</strong></a></p>
 
 ${DISCLAIMER_FR}
 
-#marketing #offres #recommandé`;
+<p>#marketing #offres #recommandé</p>`;
 
     return {
       type: 'clickbank',
@@ -112,36 +116,36 @@ ${DISCLAIMER_FR}
       estimatedCommission: product.avgCommission
     };
   }
-  
+
   // Amazon product
   const product = getRandomProduct();
   const hookEn = HOOKS_EN[Math.floor(Math.random() * HOOKS_EN.length)];
   const hookFr = HOOKS_FR[Math.floor(Math.random() * HOOKS_FR.length)];
   const hashtags = HASHTAGS[product.niche] || '#deals #recommended';
-  
-  const postEn = `${fillTemplate(hookEn, product)}
 
-❌ PROBLEM: ${product.problem}
-✅ SOLUTION: ${product.solution}
+  const postEn = `<h2>${fillTemplate(hookEn, product)}</h2>
 
-⭐ ${product.title}
-💰 Check today's price: ${product.amazonUrl}
+<p>❌ <strong>PROBLEM:</strong> ${product.problem}</p>
+<p>✅ <strong>SOLUTION:</strong> ${product.solution}</p>
+
+<p>⭐ <strong>${product.title}</strong></p>
+<p>💰 <a href="${product.amazonUrl}"><strong>Check Today's Price on Amazon →</strong></a></p>
 
 ${DISCLAIMER_EN}
 
-${hashtags} #affiliatemarketing #amazonfinds`;
+<p>${hashtags} #affiliatemarketing #amazonfinds</p>`;
 
-  const postFr = `${fillTemplate(hookFr, {...product, title: product.titleFr, problem: product.problemFr})}
+  const postFr = `<h2>${fillTemplate(hookFr, {...product, title: product.titleFr, problem: product.problemFr})}</h2>
 
-❌ PROBLÈME: ${product.problemFr}
-✅ SOLUTION: ${product.solutionFr}
+<p>❌ <strong>PROBLÈME:</strong> ${product.problemFr}</p>
+<p>✅ <strong>SOLUTION:</strong> ${product.solutionFr}</p>
 
-⭐ ${product.titleFr}
-💰 Vérifiez le prix: ${product.amazonUrlCa}
+<p>⭐ <strong>${product.titleFr}</strong></p>
+<p>💰 <a href="${product.amazonUrlCa}"><strong>Vérifiez le Prix sur Amazon →</strong></a></p>
 
 ${DISCLAIMER_FR}
 
-${hashtags} #marketing #trouvaillesamazon`;
+<p>${hashtags} #marketing #trouvaillesamazon</p>`;
 
   return {
     type: 'amazon',
@@ -159,23 +163,25 @@ ${hashtags} #marketing #trouvaillesamazon`;
  * Generate Traffic Forever promotion post
  */
 function generateTrafficForeverPost() {
-  const postEn = `${TRAFFIC_FOREVER.pitchEn}
+  const postEn = `<h2>🚀 Traffic Forever — Automated Online Income</h2>
 
-Want to build automated income streams? Traffic Forever gives you the tools, strategies, and AI-powered systems to grow your online presence — 100% free to start.
+<p>${TRAFFIC_FOREVER.pitchEn}</p>
 
-${TRAFFIC_FOREVER.ctaEn}
-🔗 ${TRAFFIC_FOREVER.url}
+<p>Want to build automated income streams? Traffic Forever gives you the tools, strategies, and AI-powered systems to grow your online presence — 100% free to start.</p>
 
-#onlinebusiness #passiveincome #digitalmarketing #entrepreneur #sidehustle #makemoneyonline`;
+<p>👉 <a href="${TRAFFIC_FOREVER.url}"><strong>Visit Traffic Forever for Free Marketing Tools →</strong></a></p>
 
-  const postFr = `${TRAFFIC_FOREVER.pitchFr}
+<p>#onlinebusiness #passiveincome #digitalmarketing #entrepreneur #sidehustle #makemoneyonline</p>`;
 
-Vous voulez construire des sources de revenus automatisées? Traffic Forever vous donne les outils, stratégies et systèmes propulsés par l'IA pour développer votre présence en ligne — 100% gratuit pour commencer.
+  const postFr = `<h2>🚀 Traffic Forever — Revenu en Ligne Automatisé</h2>
 
-${TRAFFIC_FOREVER.ctaFr}
-🔗 ${TRAFFIC_FOREVER.url}
+<p>${TRAFFIC_FOREVER.pitchFr}</p>
 
-#businessenligne #revenuspassifs #marketingdigital #entrepreneur #activitésecondaire`;
+<p>Vous voulez construire des sources de revenus automatisées? Traffic Forever vous donne les outils, stratégies et systèmes propulsés par l'IA pour développer votre présence en ligne — 100% gratuit pour commencer.</p>
+
+<p>👉 <a href="${TRAFFIC_FOREVER.url}"><strong>Visitez Traffic Forever pour des Outils Gratuits →</strong></a></p>
+
+<p>#businessenligne #revenuspassifs #marketingdigital #entrepreneur</p>`;
 
   return {
     type: 'traffic-forever',
@@ -192,23 +198,25 @@ ${TRAFFIC_FOREVER.ctaFr}
  * Generate Real Estate post for Shawn Mayo
  */
 function generateRealEstatePost() {
-  const postEn = `${REAL_ESTATE.pitchEn}
+  const postEn = `<h2>🏠 Buy or Sell in New Brunswick — Shawn Mayo Real Estate</h2>
 
-New Brunswick is one of Canada's most affordable provinces — and property values are rising fast. Whether you're a first-time buyer or looking to sell at top dollar, Shawn Mayo has the local expertise you need.
+<p>${REAL_ESTATE.pitchEn}</p>
 
-${REAL_ESTATE.ctaEn}
-🔗 ${REAL_ESTATE.website}
+<p>New Brunswick is one of Canada's most affordable provinces — and property values are rising fast. Whether you're a first-time buyer or looking to sell at top dollar, Shawn Mayo has the local expertise you need.</p>
 
-#realestate #newbrunswick #canada #homebuying #property #realtor #firsttimehomebuyer`;
+<p>👉 <a href="${REAL_ESTATE.website}"><strong>Contact Shawn for a Free Home Evaluation →</strong></a></p>
 
-  const postFr = `${REAL_ESTATE.pitchFr}
+<p>#realestate #newbrunswick #canada #homebuying #property #realtor</p>`;
 
-Le Nouveau-Brunswick est l'une des provinces les plus abordables du Canada — et les valeurs immobilières augmentent rapidement. Que vous soyez un premier acheteur ou que vous cherchiez à vendre au meilleur prix, Shawn Mayo a l'expertise locale dont vous avez besoin.
+  const postFr = `<h2>🏠 Achetez ou Vendez au Nouveau-Brunswick — Shawn Mayo Immobilier</h2>
 
-${REAL_ESTATE.ctaFr}
-🔗 ${REAL_ESTATE.website}
+<p>${REAL_ESTATE.pitchFr}</p>
 
-#immobilier #nouveaubrunswick #canada #achatmaison #propriété #courtier #premieracheteur`;
+<p>Le Nouveau-Brunswick est l'une des provinces les plus abordables du Canada — et les valeurs immobilières augmentent rapidement. Que vous soyez un premier acheteur ou que vous cherchiez à vendre au meilleur prix, Shawn Mayo a l'expertise locale dont vous avez besoin.</p>
+
+<p>👉 <a href="${REAL_ESTATE.website}"><strong>Contactez Shawn pour une Évaluation Gratuite →</strong></a></p>
+
+<p>#immobilier #nouveaubrunswick #canada #achatmaison #propriété</p>`;
 
   return {
     type: 'real-estate',
@@ -227,7 +235,7 @@ ${REAL_ESTATE.ctaFr}
  */
 function generateContent() {
   const contentType = getContentType();
-  
+
   switch (contentType) {
     case 'affiliate':
       return generateAffiliatePost();

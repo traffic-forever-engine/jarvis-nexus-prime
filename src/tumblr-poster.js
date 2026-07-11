@@ -68,7 +68,7 @@ async function postToTumblr(content) {
       : content.type === 'real-estate'
         ? 'realestate,newbrunswick,canada,property,homes'
         : 'onlinebusiness,marketing,income,entrepreneur',
-    format: 'markdown'
+    format: 'html'
   };
 
   try {
