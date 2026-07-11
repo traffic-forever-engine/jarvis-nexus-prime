@@ -88,7 +88,7 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 <div class="stat-card"><div id="stat-re" class="stat-num blue">0</div><div class="stat-label">RE Clicks</div></div>
 <div class="stat-card"><div id="stat-ebay" class="stat-num orange">0</div><div class="stat-label">eBay Clicks</div></div>
 <div class="stat-card"><div id="stat-pins" class="stat-num purple">0</div><div class="stat-label">Posts</div></div>
-<div class="stat-card"><div id="stat-rev" class="stat-num yellow">$0.00</div><div class="stat-label">Revenue</div></div>
+<div class="stat-card"><div id="stat-tumblr" class="stat-num yellow">0</div><div class="stat-label">Tumblr Live</div></div>
 <div class="stat-card"><div class="stat-num" style="color:white">100%</div><div class="stat-label">FTC</div></div>
 </div>
 
@@ -162,7 +162,7 @@ async function speak(text){
 
 function addMsg(t){var c=document.getElementById("jarvis-messages"),d=document.createElement("div");d.className="msg";d.innerHTML="<span style='color:#0891b2;font-size:9px'>"+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+"</span><br>"+t;c.appendChild(d);c.scrollTop=c.scrollHeight}
 
-function jarvisReport(){var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";speak(g+" Dennis. Status report. Affiliate clicks: "+stats.clicks+". eBay clicks: "+stats.ebay+". Real estate clicks: "+stats.re+". Posts published: "+stats.posts+". Estimated revenue: $"+stats.revenue.toFixed(2)+". All systems running every 15 minutes across 20 countries.")}
+function jarvisReport(){var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";speak(g+" Dennis. Status report. Affiliate clicks: "+stats.clicks+". eBay clicks: "+stats.ebay+". Real estate clicks: "+stats.re+". Posts live on Tumblr: "+stats.posts+". All systems running every 15 minutes across 20 countries.")}
 function jarvisDiagnose(){speak("Running diagnostic. Amazon 20 countries, stable. eBay Browse API, stable. Supabase Brain, connected. Tumblr engine, ready. Voice engine, active. All systems green. No issues detected.")}
 function jarvisMotivate(){var m=["Dennis, every sprint builds your empire. The engine never sleeps. While others rest, we compound.","The affiliate machine runs 24 7. Each post is a seed. Revenue grows exponentially from here.","You built what most only dream about. A fully autonomous income engine. Trust the process.","Every 15 minutes, another flag planted across 20 countries. The compound effect is unstoppable."];speak(m[Math.floor(Math.random()*m.length)])}
 function jarvisForecast(){var p=stats.posts>0?stats.posts:96;speak("Projected monthly revenue at current pace: $"+(p*30*1.25*0.02).toFixed(2)+". Expect 3 to 5 x growth within 90 days as traffic compounds and algorithms favor consistent posting.")}
@@ -181,7 +181,7 @@ async function loadStats(){
                     case"real_estate_clicks":stats.re=Number(row.value)||0;break;
                     case"real_estate_emails":stats.reEmail=Number(row.value)||0;break;
                     case"posts_published":stats.posts=Number(row.value)||0;break;
-                    case"est_revenue":stats.revenue=Number(row.value)||0;break;
+                    case"est_revenue":break;
                     case"last_sprint":document.getElementById("last-sprint").innerText=new Date(Number(row.value)).toLocaleString([],{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});break;
                 }
             });
@@ -189,7 +189,7 @@ async function loadStats(){
             document.getElementById("stat-ebay").innerText=stats.ebay;
             document.getElementById("stat-re").innerText=stats.re;
             document.getElementById("stat-pins").innerText=stats.posts;
-            document.getElementById("stat-rev").innerText="$"+stats.revenue.toFixed(2);
+            document.getElementById("stat-tumblr").innerText=stats.posts;
             document.getElementById("re-web").innerText=stats.re;
             document.getElementById("re-email").innerText=stats.reEmail;
             document.getElementById("posts-today").innerText=stats.posts;
@@ -220,7 +220,7 @@ async function init(){
     // Speak greeting after short delay
     setTimeout(function(){
         var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";
-        speak(g+" Dennis. Jarvis 2.0 is fully online. "+stats.posts+" posts published so far. Revenue at $"+stats.revenue.toFixed(2)+". All systems green. Click on me anytime for a full report.");
+        speak(g+" Dennis. Jarvis 2.0 is fully online. "+stats.posts+" posts published to Tumblr so far. All systems green. Click on me anytime for a full report.");
     },2000);
 
     // Refresh stats every 60 seconds
