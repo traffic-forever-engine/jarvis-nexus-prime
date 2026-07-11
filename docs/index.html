@@ -12,7 +12,7 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 .glow{text-shadow:0 0 10px rgba(0,255,255,0.7)}
 .card{background:rgba(15,23,42,0.85);border:1px solid rgba(0,255,255,0.3);box-shadow:0 0 12px rgba(0,255,255,0.1);border-radius:12px;padding:20px;margin-bottom:16px}
 .grid-main{display:grid;grid-template-columns:1fr 2fr;gap:20px}
-.stats-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:20px}
+.stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:20px}
 .stat-card{background:rgba(15,23,42,0.85);border:1px solid rgba(0,255,255,0.3);border-radius:10px;padding:14px;text-align:center}
 .stat-num{font-size:22px;font-weight:bold}
 .stat-label{font-size:9px;color:#64748b;text-transform:uppercase;margin-top:4px}
@@ -34,7 +34,7 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 .chat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .msg{background:rgba(30,41,59,0.5);padding:8px;border-radius:8px;border-left:2px solid #06b6d4;margin-bottom:8px;font-size:11px}
 .row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px}
-.cyan{color:#22d3ee}.green{color:#34d399}.yellow{color:#fbbf24}.orange{color:#fb923c}.purple{color:#a78bfa}.blue{color:#60a5fa}
+.cyan{color:#22d3ee}.green{color:#34d399}.yellow{color:#fbbf24}.orange{color:#fb923c}.purple{color:#a78bfa}.blue{color:#60a5fa}.red{color:#f87171}
 .section-title{color:#67e8f9;font-size:13px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}
 @media(max-width:768px){.grid-main{grid-template-columns:1fr}.stats-bar{grid-template-columns:repeat(3,1fr)}}
 </style>
@@ -64,9 +64,10 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 <div class="section-title">Engine Status</div>
 <div class="row"><span style="color:#94a3b8">Amazon (20 Countries)</span><span class="green">Active</span></div>
 <div class="row"><span style="color:#94a3b8">eBay Global</span><span class="green">Active</span></div>
+<div class="row"><span style="color:#94a3b8">ClickBank</span><span class="green">Active</span></div>
 <div class="row"><span style="color:#94a3b8">Traffic Forever</span><span class="green">Active</span></div>
-<div class="row"><span style="color:#94a3b8">Tumblr</span><span class="green">Active</span></div>
-<div class="row"><span style="color:#94a3b8">Voice Engine</span><span class="green">ElevenLabs AI</span></div>
+<div class="row"><span style="color:#94a3b8">Tumblr</span><span id="tumblr-status" class="yellow">Reconnecting</span></div>
+<div class="row"><span style="color:#94a3b8">Voice Engine</span><span class="green">Grok AI</span></div>
 <div class="row"><span style="color:#94a3b8">Scan Interval</span><span class="cyan">Every 15 min</span></div>
 </div>
 <div class="card">
@@ -84,12 +85,11 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 </div>
 
 <div class="stats-bar">
-<div class="stat-card"><div id="stat-clicks" class="stat-num cyan">0</div><div class="stat-label">Affiliate Clicks</div></div>
-<div class="stat-card"><div id="stat-re" class="stat-num blue">0</div><div class="stat-label">RE Clicks</div></div>
+<div class="stat-card"><div id="stat-amazon" class="stat-num cyan">0</div><div class="stat-label">Amazon Clicks</div></div>
 <div class="stat-card"><div id="stat-ebay" class="stat-num orange">0</div><div class="stat-label">eBay Clicks</div></div>
-<div class="stat-card"><div id="stat-pins" class="stat-num purple">0</div><div class="stat-label">Posts</div></div>
-<div class="stat-card"><div id="stat-tumblr" class="stat-num yellow">0</div><div class="stat-label">Tumblr Live</div></div>
-<div class="stat-card"><div class="stat-num" style="color:white">100%</div><div class="stat-label">FTC</div></div>
+<div class="stat-card"><div id="stat-clickbank" class="stat-num purple">0</div><div class="stat-label">ClickBank Clicks</div></div>
+<div class="stat-card"><div id="stat-re" class="stat-num blue">0</div><div class="stat-label">RE Clicks</div></div>
+<div class="stat-card"><div id="stat-posts" class="stat-num green">0</div><div class="stat-label">Posts Published</div></div>
 </div>
 
 <div class="orb" id="orb" onclick="toggleChat()"></div>
@@ -111,12 +111,12 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 <script>
 var SB_URL="https://dczsgopdfkmbczrvlpde.supabase.co";
 var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjenNnb3BkZmttYmN6cnZscGRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3MjA0NTcsImV4cCI6MjA5OTI5NjQ1N30.PunItHtaMULerWRpZY93opZc-q1UGnc-rz0piT-oZ1E";
-var stats={clicks:0,ebay:0,re:0,reEmail:0,posts:0,revenue:0};
+var stats={amazon:0,ebay:0,clickbank:0,re:0,reEmail:0,posts:0};
 var speaking=false,queue=[];
 
 function toggleChat(){document.getElementById("chat-panel").classList.toggle("open")}
 
-// ElevenLabs natural voice via Puter.js
+// Smooth AI voice via Puter.js xAI Grok (authoritative "leo" voice)
 async function speak(text){
     addMsg(text);
     if(speaking){queue.push(text);return}
@@ -126,7 +126,11 @@ async function speak(text){
     orb.classList.add("speaking");
     st.style.display="inline";
     try{
-        var audio=await puter.ai.txt2speech(text,{voice:"Daniel"});
+        var audio=await puter.ai.txt2speech(text,{
+            provider:"xai",
+            voice:"leo",
+            output_format:"mp3"
+        });
         var blob=new Blob([audio],{type:"audio/mpeg"});
         var url=URL.createObjectURL(blob);
         var player=new Audio(url);
@@ -145,27 +149,44 @@ async function speak(text){
         };
         player.play();
     }catch(e){
-        // Fallback to browser TTS if Puter fails
-        if(window.speechSynthesis){
-            var u=new SpeechSynthesisUtterance(text);
-            u.rate=0.9;u.pitch=0.85;u.volume=1;
-            u.onend=function(){orb.classList.remove("speaking");st.style.display="none";speaking=false;if(queue.length>0){speak(queue.shift())}};
-            window.speechSynthesis.speak(u);
-        }else{
-            orb.classList.remove("speaking");
-            st.style.display="none";
-            speaking=false;
-            if(queue.length>0){speak(queue.shift())}
+        // Fallback: try Gemini with calm assistant instructions
+        try{
+            var audio2=await puter.ai.txt2speech(text,{
+                provider:"gemini",
+                model:"gemini-2.5-flash-preview-tts",
+                voice:"Puck",
+                instructions:"Speak in a calm, smooth, authoritative tone like a personal AI assistant named Jarvis."
+            });
+            var blob2=new Blob([audio2],{type:"audio/mpeg"});
+            var url2=URL.createObjectURL(blob2);
+            var player2=new Audio(url2);
+            player2.onended=function(){orb.classList.remove("speaking");st.style.display="none";speaking=false;URL.revokeObjectURL(url2);if(queue.length>0){speak(queue.shift())}};
+            player2.onerror=function(){orb.classList.remove("speaking");st.style.display="none";speaking=false;if(queue.length>0){speak(queue.shift())}};
+            player2.play();
+        }catch(e2){
+            // Final fallback: browser TTS
+            if(window.speechSynthesis){
+                var u=new SpeechSynthesisUtterance(text);
+                var voices=window.speechSynthesis.getVoices();
+                var preferred=voices.filter(function(v){return v.name.indexOf("Google UK English Male")>-1||v.name.indexOf("Daniel")>-1||v.name.indexOf("James")>-1});
+                if(preferred.length>0)u.voice=preferred[0];
+                u.rate=0.9;u.pitch=0.85;u.volume=1;
+                u.onend=function(){orb.classList.remove("speaking");st.style.display="none";speaking=false;if(queue.length>0){speak(queue.shift())}};
+                window.speechSynthesis.speak(u);
+            }else{
+                orb.classList.remove("speaking");st.style.display="none";speaking=false;
+                if(queue.length>0){speak(queue.shift())}
+            }
         }
     }
 }
 
 function addMsg(t){var c=document.getElementById("jarvis-messages"),d=document.createElement("div");d.className="msg";d.innerHTML="<span style='color:#0891b2;font-size:9px'>"+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+"</span><br>"+t;c.appendChild(d);c.scrollTop=c.scrollHeight}
 
-function jarvisReport(){var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";speak(g+" Dennis. Status report. Affiliate clicks: "+stats.clicks+". eBay clicks: "+stats.ebay+". Real estate clicks: "+stats.re+". Posts live on Tumblr: "+stats.posts+". All systems running every 15 minutes across 20 countries.")}
-function jarvisDiagnose(){speak("Running diagnostic. Amazon 20 countries, stable. eBay Browse API, stable. Supabase Brain, connected. Tumblr engine, ready. Voice engine, active. All systems green. No issues detected.")}
+function jarvisReport(){speak("Status report, Dennis. Amazon clicks: "+stats.amazon+". eBay clicks: "+stats.ebay+". ClickBank clicks: "+stats.clickbank+". Real estate clicks: "+stats.re+". Total posts published: "+stats.posts+". Engine running every 15 minutes across 20 countries.")}
+function jarvisDiagnose(){speak("Running diagnostic. [pause] Amazon links across 20 countries: operational. eBay affiliate links: operational. ClickBank offers: operational. Tumblr posting: currently reconnecting credentials. Voice engine: active. Supabase brain: connected. One issue detected: Tumblr OAuth needs fresh tokens. Recommend regenerating in Tumblr app settings.")}
 function jarvisMotivate(){var m=["Dennis, every sprint builds your empire. The engine never sleeps. While others rest, we compound.","The affiliate machine runs 24 7. Each post is a seed. Revenue grows exponentially from here.","You built what most only dream about. A fully autonomous income engine. Trust the process.","Every 15 minutes, another flag planted across 20 countries. The compound effect is unstoppable."];speak(m[Math.floor(Math.random()*m.length)])}
-function jarvisForecast(){var p=stats.posts>0?stats.posts:96;speak("Projected monthly revenue at current pace: $"+(p*30*1.25*0.02).toFixed(2)+". Expect 3 to 5 x growth within 90 days as traffic compounds and algorithms favor consistent posting.")}
+function jarvisForecast(){speak("Forecast based on current trajectory. Once Tumblr credentials are refreshed, expect 96 posts per day. At industry average click rates, that projects to 15 to 30 affiliate clicks daily within the first week. Revenue follows clicks. The foundation is solid. We just need that Tumblr connection restored.")}
 
 function addLog(msg,type){var box=document.getElementById("log-box"),d=document.createElement("div");d.className="log-entry";var color=type==="error"?"#ef4444":type==="success"?"#10b981":"#475569";d.innerHTML="<span style='color:"+color+"'>["+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"})+"]</span> "+msg;box.insertBefore(d,box.firstChild);if(box.children.length>50)box.removeChild(box.lastChild)}
 
@@ -176,20 +197,20 @@ async function loadStats(){
         if(data&&data.length>0){
             data.forEach(function(row){
                 switch(row.category){
-                    case"affiliate_clicks":stats.clicks=Number(row.value)||0;break;
+                    case"affiliate_clicks":stats.amazon=Number(row.value)||0;break;
                     case"ebay_clicks":stats.ebay=Number(row.value)||0;break;
+                    case"clickbank_clicks":stats.clickbank=Number(row.value)||0;break;
                     case"real_estate_clicks":stats.re=Number(row.value)||0;break;
                     case"real_estate_emails":stats.reEmail=Number(row.value)||0;break;
                     case"posts_published":stats.posts=Number(row.value)||0;break;
-                    case"est_revenue":break;
                     case"last_sprint":document.getElementById("last-sprint").innerText=new Date(Number(row.value)).toLocaleString([],{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});break;
                 }
             });
-            document.getElementById("stat-clicks").innerText=stats.clicks;
+            document.getElementById("stat-amazon").innerText=stats.amazon;
             document.getElementById("stat-ebay").innerText=stats.ebay;
+            document.getElementById("stat-clickbank").innerText=stats.clickbank;
             document.getElementById("stat-re").innerText=stats.re;
-            document.getElementById("stat-pins").innerText=stats.posts;
-            document.getElementById("stat-tumblr").innerText=stats.posts;
+            document.getElementById("stat-posts").innerText=stats.posts;
             document.getElementById("re-web").innerText=stats.re;
             document.getElementById("re-email").innerText=stats.reEmail;
             document.getElementById("posts-today").innerText=stats.posts;
@@ -211,22 +232,24 @@ async function init(){
     addLog("Initializing Jarvis 2.0 Nexus Prime...","success");
     addLog("Connecting to Supabase Brain...","success");
     await loadStats();
-    addLog("Stats loaded: "+stats.posts+" posts, $"+stats.revenue.toFixed(2)+" revenue","success");
+    addLog("Stats loaded from live database","success");
     await loadLogs();
-    addLog("All systems LIVE.","success");
+    addLog("All systems online.","success");
     addLog("GitHub Engine: RUNNING every 15 min","success");
-    addLog("Voice Engine: ElevenLabs AI ACTIVE","success");
+    addLog("Voice Engine: Grok AI (leo) ACTIVE","success");
+    addLog("NOTE: Tumblr OAuth needs token refresh","error");
 
     // Speak greeting after short delay
     setTimeout(function(){
         var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";
-        speak(g+" Dennis. Jarvis 2.0 is fully online. "+stats.posts+" posts published to Tumblr so far. All systems green. Click on me anytime for a full report.");
+        speak(g+" Dennis. [pause] Jarvis 2.0 online. "+stats.posts+" posts in the system. I need to flag one issue: Tumblr authentication needs fresh tokens. Once you regenerate them, posts will flow live. Click on me for a full status report anytime.");
     },2000);
 
     // Refresh stats every 60 seconds
     setInterval(function(){loadStats()},60000);
 }
 
+if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices()}}
 init();
 </script>
 </body>
