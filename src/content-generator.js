@@ -1,11 +1,8 @@
 /**
  * Jarvis 2.0 Nexus Prime - Content Generator
  * 
- * Generates bilingual (EN/FR) Problem-Solution style copy
- * using viral copywriting formulas.
- * 
- * Posts use HTML format with clickable <a href> links
- * so users can click through to affiliate products directly.
+ * Generates Base44-style posts with clickable affiliate links.
+ * All posts use HTML <a href> tags so links are clickable on Tumblr.
  */
 
 import {
@@ -17,94 +14,78 @@ import {
   TRAFFIC_FOREVER
 } from './products.js';
 
-// Viral hooks (from Genie AI analysis)
+// Short punchy hooks (Base44 style — casual, conversational)
 const HOOKS_EN = [
-  "Stop wasting money on {category} that doesn't work.",
-  "I tried 12 {category} products. Only THIS one actually works.",
-  "Why 10,000+ people switched to this {title} (and never looked back)",
-  "The {category} secret that brands don't want you to know",
-  "I was skeptical too. Then I tried {title}...",
-  "Your {problem} ends TODAY. Here's how.",
-  "This {title} changed my entire routine. Not exaggerating.",
-  "WARNING: You'll never go back after trying {title}",
-  "The #1 {category} product everyone's talking about in 2025",
-  "Tired of {problem}? This $30 solution actually works."
+  "tired of cheap stuff breaking? same. this {title} is the one 👆",
+  "okay but why didn't anyone tell me about this sooner?? {title} is a game changer",
+  "been using this for 2 weeks and I'm never going back. {title} hits different",
+  "if you're still dealing with {problem}... stop. just get this.",
+  "this is the one everyone's been talking about. {title} — trust me on this",
+  "finally found something that actually works for {problem}. bookmark this.",
+  "POV: you finally solved {problem} with one purchase",
+  "the reviews don't lie. 50,000+ people can't be wrong about {title}",
+  "I was today years old when I found out about {title}. life changed.",
+  "stop scrolling. if you need help with {problem}, THIS is it."
 ];
 
 const HOOKS_FR = [
-  "Arrêtez de gaspiller de l'argent en {category} qui ne fonctionne pas.",
-  "J'ai essayé 12 produits. Seul CELUI-CI fonctionne vraiment.",
-  "Pourquoi 10 000+ personnes sont passées à {title}",
-  "Le secret {category} que les marques ne veulent pas que vous sachiez",
-  "J'étais sceptique aussi. Puis j'ai essayé {title}...",
-  "Votre {problem} se termine AUJOURD'HUI. Voici comment.",
-  "Ce {title} a changé toute ma routine. Sans exagérer.",
-  "ATTENTION: Vous ne reviendrez jamais en arrière après avoir essayé {title}",
-  "Le produit {category} #1 dont tout le monde parle en 2025",
-  "Fatigué de {problem}? Cette solution à 30$ fonctionne vraiment."
+  "fatigué des trucs pas chers qui cassent? pareil. ce {title} c'est le bon 👆",
+  "pourquoi personne m'a parlé de ça avant?? {title} change tout",
+  "je l'utilise depuis 2 semaines et je reviens jamais en arrière. {title} c'est autre chose",
+  "si tu gères encore {problem}... arrête. prends juste ça.",
+  "c'est celui dont tout le monde parle. {title} — fais-moi confiance",
+  "j'ai enfin trouvé quelque chose qui marche pour {problem}. sauvegarde ça.",
+  "POV: tu as enfin résolu {problem} avec un seul achat",
+  "les avis ne mentent pas. 50 000+ personnes ne peuvent pas se tromper sur {title}",
+  "j'ai découvert {title} aujourd'hui. ma vie a changé.",
+  "arrête de scroller. si t'as besoin d'aide avec {problem}, C'EST ça."
 ];
 
-// FTC Disclaimer
-const DISCLAIMER_EN = '<small>⚠️ This post contains affiliate links. We may earn a commission at no extra cost to you.</small>';
-const DISCLAIMER_FR = '<small>⚠️ Ce post contient des liens affiliés. Nous pouvons gagner une commission sans frais supplémentaires pour vous.</small>';
-
-// Hashtags by niche
 const HASHTAGS = {
-  'health-wellness': '#health #wellness #selfcare #healthylifestyle #fitness #wellbeing',
-  'technology': '#tech #gadgets #technology #innovation #smart #productivity',
-  'beauty-skincare': '#beauty #skincare #glowup #skincareroutine #beautytips #antiaging',
-  'online-education': '#learning #education #onlinelearning #skills #growth #edtech'
+  'health-wellness': '#health #wellness #selfcare #fitness #wellbeing #natural #musthave #deals #shopping #ad #affiliate',
+  'technology': '#tech #gadgets #technology #smart #productivity #techlife #bestbuys #deals #shopping #musthave #wishlist #ad #affiliate',
+  'beauty-skincare': '#beauty #skincare #glowup #skincareroutine #beautytips #antiaging #naturalbeauty #deals #shopping #musthave #ad #affiliate',
+  'online-education': '#learning #education #skills #growth #productivity #deals #shopping #musthave #ad #affiliate'
 };
 
-/**
- * Fill template with product data
- */
+const TAGS_CSV = {
+  'health-wellness': 'health,wellness,selfcare,fitness,wellbeing,natural,musthave,deals,shopping,ad,affiliate',
+  'technology': 'tech,gadgets,technology,smart,productivity,techlife,bestbuys,deals,shopping,musthave,wishlist,ad,affiliate',
+  'beauty-skincare': 'beauty,skincare,glowup,skincareroutine,beautytips,antiaging,naturalbeauty,deals,shopping,musthave,ad,affiliate',
+  'online-education': 'learning,education,skills,growth,productivity,deals,shopping,musthave,ad,affiliate'
+};
+
 function fillTemplate(template, product) {
   return template
     .replace(/{title}/g, product.title || '')
     .replace(/{titleFr}/g, product.titleFr || '')
     .replace(/{category}/g, product.niche || product.category || '')
-    .replace(/{problem}/g, product.problem || '')
-    .replace(/{problemFr}/g, product.problemFr || '')
-    .replace(/{solution}/g, product.solution || '')
-    .replace(/{solutionFr}/g, product.solutionFr || '');
+    .replace(/{problem}/g, (product.problem || '').toLowerCase())
+    .replace(/{problemFr}/g, (product.problemFr || '').toLowerCase());
 }
 
 /**
- * Generate affiliate product post (bilingual) — HTML format with clickable links
+ * Generate affiliate product post — HTML with clickable links
  */
 function generateAffiliatePost() {
-  // Decide: Amazon or ClickBank
-  const isClickBank = Math.random() < 0.25; // 25% ClickBank, 75% Amazon
+  const isClickBank = Math.random() < 0.25;
 
   if (isClickBank) {
     const product = getRandomClickBank();
     const hookEn = HOOKS_EN[Math.floor(Math.random() * HOOKS_EN.length)];
     const hookFr = HOOKS_FR[Math.floor(Math.random() * HOOKS_FR.length)];
 
-    const postEn = `<h2>${fillTemplate(hookEn, product)}</h2>
+    const postEn = `<p>🛒 <a href="${product.hoplink}"><b>Shop this deal →</b></a></p>
+<p>${fillTemplate(hookEn, product)}</p>
+<p>${product.solution}</p>
+<p>🛒 <a href="${product.hoplink}"><b>Click here to get it now →</b></a></p>
+<p>#health #wellness #selfimprovement #mindset #deals #ad #affiliate</p>`;
 
-<p>❌ <strong>PROBLEM:</strong> ${product.problem}</p>
-<p>✅ <strong>SOLUTION:</strong> ${product.solution}</p>
-
-<p>⭐ <strong>${product.title}</strong></p>
-<p>👉 <a href="${product.hoplink}"><strong>Click Here to Get It Now →</strong></a></p>
-
-${DISCLAIMER_EN}
-
-<p>#affiliatemarketing #deals #recommended</p>`;
-
-    const postFr = `<h2>${fillTemplate(hookFr, {...product, title: product.titleFr, problem: product.problemFr})}</h2>
-
-<p>❌ <strong>PROBLÈME:</strong> ${product.problemFr}</p>
-<p>✅ <strong>SOLUTION:</strong> ${product.solutionFr}</p>
-
-<p>⭐ <strong>${product.titleFr}</strong></p>
-<p>👉 <a href="${product.hoplink}"><strong>Cliquez Ici pour l'Obtenir →</strong></a></p>
-
-${DISCLAIMER_FR}
-
-<p>#marketing #offres #recommandé</p>`;
+    const postFr = `<p>🛒 <a href="${product.hoplink}"><b>Achetez cette offre →</b></a></p>
+<p>${fillTemplate(hookFr, {...product, title: product.titleFr, problem: product.problemFr})}</p>
+<p>${product.solutionFr}</p>
+<p>🛒 <a href="${product.hoplink}"><b>Cliquez ici pour l'obtenir →</b></a></p>
+<p>#santé #bienêtre #développementpersonnel #offres #ad #affiliate</p>`;
 
     return {
       type: 'clickbank',
@@ -113,6 +94,7 @@ ${DISCLAIMER_FR}
       postEn,
       postFr,
       link: product.hoplink,
+      tags: 'health,wellness,selfimprovement,mindset,deals,ad,affiliate',
       estimatedCommission: product.avgCommission
     };
   }
@@ -121,31 +103,20 @@ ${DISCLAIMER_FR}
   const product = getRandomProduct();
   const hookEn = HOOKS_EN[Math.floor(Math.random() * HOOKS_EN.length)];
   const hookFr = HOOKS_FR[Math.floor(Math.random() * HOOKS_FR.length)];
-  const hashtags = HASHTAGS[product.niche] || '#deals #recommended';
+  const hashtags = HASHTAGS[product.niche] || '#deals #shopping #musthave #ad #affiliate';
+  const tags = TAGS_CSV[product.niche] || 'deals,shopping,musthave,ad,affiliate';
 
-  const postEn = `<h2>${fillTemplate(hookEn, product)}</h2>
+  const postEn = `<p>🛒 <a href="${product.amazonUrl}"><b>Shop top picks on Amazon →</b></a></p>
+<p>${fillTemplate(hookEn, product)}</p>
+<p>${product.solution}</p>
+<p>🛒 <a href="${product.amazonUrl}"><b>Shop top picks on Amazon →</b></a></p>
+<p>${hashtags}</p>`;
 
-<p>❌ <strong>PROBLEM:</strong> ${product.problem}</p>
-<p>✅ <strong>SOLUTION:</strong> ${product.solution}</p>
-
-<p>⭐ <strong>${product.title}</strong></p>
-<p>💰 <a href="${product.amazonUrl}"><strong>Check Today's Price on Amazon →</strong></a></p>
-
-${DISCLAIMER_EN}
-
-<p>${hashtags} #affiliatemarketing #amazonfinds</p>`;
-
-  const postFr = `<h2>${fillTemplate(hookFr, {...product, title: product.titleFr, problem: product.problemFr})}</h2>
-
-<p>❌ <strong>PROBLÈME:</strong> ${product.problemFr}</p>
-<p>✅ <strong>SOLUTION:</strong> ${product.solutionFr}</p>
-
-<p>⭐ <strong>${product.titleFr}</strong></p>
-<p>💰 <a href="${product.amazonUrlCa}"><strong>Vérifiez le Prix sur Amazon →</strong></a></p>
-
-${DISCLAIMER_FR}
-
-<p>${hashtags} #marketing #trouvaillesamazon</p>`;
+  const postFr = `<p>🛒 <a href="${product.amazonUrlCa}"><b>Magasinez sur Amazon →</b></a></p>
+<p>${fillTemplate(hookFr, {...product, title: product.titleFr, problem: product.problemFr})}</p>
+<p>${product.solutionFr}</p>
+<p>🛒 <a href="${product.amazonUrlCa}"><b>Magasinez sur Amazon →</b></a></p>
+<p>${hashtags}</p>`;
 
   return {
     type: 'amazon',
@@ -154,33 +125,21 @@ ${DISCLAIMER_FR}
     postEn,
     postFr,
     link: product.amazonUrl,
+    tags: tags,
     estimatedCommission: getEstimatedCommission(product),
     niche: product.niche
   };
 }
 
-/**
- * Generate Traffic Forever promotion post
- */
 function generateTrafficForeverPost() {
-  const postEn = `<h2>🚀 Traffic Forever — Automated Online Income</h2>
-
-<p>${TRAFFIC_FOREVER.pitchEn}</p>
-
-<p>Want to build automated income streams? Traffic Forever gives you the tools, strategies, and AI-powered systems to grow your online presence — 100% free to start.</p>
-
-<p>👉 <a href="${TRAFFIC_FOREVER.url}"><strong>Visit Traffic Forever for Free Marketing Tools →</strong></a></p>
-
+  const postEn = `<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Visit Traffic Forever →</b></a></p>
+<p>Want automated income streams? Traffic Forever gives you free tools, strategies, and AI-powered systems to grow online. 100% free to start.</p>
+<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Get Free Marketing Tools →</b></a></p>
 <p>#onlinebusiness #passiveincome #digitalmarketing #entrepreneur #sidehustle #makemoneyonline</p>`;
 
-  const postFr = `<h2>🚀 Traffic Forever — Revenu en Ligne Automatisé</h2>
-
-<p>${TRAFFIC_FOREVER.pitchFr}</p>
-
-<p>Vous voulez construire des sources de revenus automatisées? Traffic Forever vous donne les outils, stratégies et systèmes propulsés par l'IA pour développer votre présence en ligne — 100% gratuit pour commencer.</p>
-
-<p>👉 <a href="${TRAFFIC_FOREVER.url}"><strong>Visitez Traffic Forever pour des Outils Gratuits →</strong></a></p>
-
+  const postFr = `<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Visitez Traffic Forever →</b></a></p>
+<p>Vous voulez des revenus automatisés? Traffic Forever vous donne les outils gratuits et systèmes IA pour grandir en ligne. 100% gratuit.</p>
+<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Outils Marketing Gratuits →</b></a></p>
 <p>#businessenligne #revenuspassifs #marketingdigital #entrepreneur</p>`;
 
   return {
@@ -190,33 +149,21 @@ function generateTrafficForeverPost() {
     postEn,
     postFr,
     link: TRAFFIC_FOREVER.url,
+    tags: 'onlinebusiness,passiveincome,digitalmarketing,entrepreneur,sidehustle,makemoneyonline',
     estimatedCommission: 0
   };
 }
 
-/**
- * Generate Real Estate post for Shawn Mayo
- */
 function generateRealEstatePost() {
-  const postEn = `<h2>🏠 Buy or Sell in New Brunswick — Shawn Mayo Real Estate</h2>
-
-<p>${REAL_ESTATE.pitchEn}</p>
-
-<p>New Brunswick is one of Canada's most affordable provinces — and property values are rising fast. Whether you're a first-time buyer or looking to sell at top dollar, Shawn Mayo has the local expertise you need.</p>
-
-<p>👉 <a href="${REAL_ESTATE.website}"><strong>Contact Shawn for a Free Home Evaluation →</strong></a></p>
-
+  const postEn = `<p>🏠 <a href="${REAL_ESTATE.website}"><b>Contact Shawn Mayo →</b></a></p>
+<p>Looking to buy or sell in New Brunswick? Property values are rising fast. Shawn Mayo has the local expertise you need. Free consultation — no obligation.</p>
+<p>🏠 <a href="${REAL_ESTATE.website}"><b>Free Home Evaluation →</b></a></p>
 <p>#realestate #newbrunswick #canada #homebuying #property #realtor</p>`;
 
-  const postFr = `<h2>🏠 Achetez ou Vendez au Nouveau-Brunswick — Shawn Mayo Immobilier</h2>
-
-<p>${REAL_ESTATE.pitchFr}</p>
-
-<p>Le Nouveau-Brunswick est l'une des provinces les plus abordables du Canada — et les valeurs immobilières augmentent rapidement. Que vous soyez un premier acheteur ou que vous cherchiez à vendre au meilleur prix, Shawn Mayo a l'expertise locale dont vous avez besoin.</p>
-
-<p>👉 <a href="${REAL_ESTATE.website}"><strong>Contactez Shawn pour une Évaluation Gratuite →</strong></a></p>
-
-<p>#immobilier #nouveaubrunswick #canada #achatmaison #propriété</p>`;
+  const postFr = `<p>🏠 <a href="${REAL_ESTATE.website}"><b>Contactez Shawn Mayo →</b></a></p>
+<p>Vous cherchez à acheter ou vendre au Nouveau-Brunswick? Les valeurs immobilières augmentent rapidement. Consultation gratuite — sans obligation.</p>
+<p>🏠 <a href="${REAL_ESTATE.website}"><b>Évaluation Gratuite →</b></a></p>
+<p>#immobilier #nouveaubrunswick #canada #propriété</p>`;
 
   return {
     type: 'real-estate',
@@ -225,34 +172,19 @@ function generateRealEstatePost() {
     postEn,
     postFr,
     link: REAL_ESTATE.website,
+    tags: 'realestate,newbrunswick,canada,homebuying,property,realtor',
     estimatedCommission: 0
   };
 }
 
-/**
- * Main content generation function
- * Returns a complete post based on rotation rules
- */
 function generateContent() {
   const contentType = getContentType();
-
   switch (contentType) {
-    case 'affiliate':
-      return generateAffiliatePost();
-    case 'traffic-forever':
-      return generateTrafficForeverPost();
-    case 'real-estate':
-      return generateRealEstatePost();
-    default:
-      return generateAffiliatePost();
+    case 'affiliate': return generateAffiliatePost();
+    case 'traffic-forever': return generateTrafficForeverPost();
+    case 'real-estate': return generateRealEstatePost();
+    default: return generateAffiliatePost();
   }
 }
 
-export {
-  generateContent,
-  generateAffiliatePost,
-  generateTrafficForeverPost,
-  generateRealEstatePost,
-  DISCLAIMER_EN,
-  DISCLAIMER_FR
-};
+export { generateContent, generateAffiliatePost, generateTrafficForeverPost, generateRealEstatePost };
