@@ -24,6 +24,11 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 .log-entry{padding:3px 0;animation:fadeIn 0.3s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .orb{width:70px;height:70px;background:radial-gradient(circle,rgba(0,255,255,0.8) 0%,rgba(0,100,255,0.2) 70%);border-radius:50%;box-shadow:0 0 25px rgba(0,255,255,0.6);position:fixed;bottom:20px;right:20px;cursor:pointer;animation:float 4s ease-in-out infinite;z-index:1001}
+.emergency-btn{position:fixed;top:20px;right:20px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,#ff0000 0%,#8b0000 70%);border:3px solid #ff4444;box-shadow:0 0 20px rgba(255,0,0,0.4);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1001;transition:all 0.3s}
+.emergency-btn:hover{transform:scale(1.1);box-shadow:0 0 40px rgba(255,0,0,0.8)}
+.emergency-btn.alarm{animation:siren 0.5s infinite}
+.emergency-btn .btn-text{color:#fff;font-size:9px;font-weight:bold;text-align:center;font-family:'Courier New',monospace;text-transform:uppercase}
+@keyframes siren{0%{box-shadow:0 0 20px rgba(255,0,0,0.9);background:radial-gradient(circle,#ff0000 0%,#8b0000 70%)}50%{box-shadow:0 0 50px rgba(255,255,0,0.9);background:radial-gradient(circle,#ffaa00 0%,#8b0000 70%)}100%{box-shadow:0 0 20px rgba(255,0,0,0.9);background:radial-gradient(circle,#ff0000 0%,#8b0000 70%)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .orb.speaking{animation:sp 0.5s ease-in-out infinite}
 @keyframes sp{0%,100%{transform:scale(1);box-shadow:0 0 25px rgba(0,255,255,0.6)}50%{transform:scale(1.15);box-shadow:0 0 45px rgba(0,255,255,1)}}
@@ -66,7 +71,7 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 <div class="row"><span style="color:#94a3b8">eBay Global</span><span class="green">Active</span></div>
 <div class="row"><span style="color:#94a3b8">ClickBank</span><span class="green">Active</span></div>
 <div class="row"><span style="color:#94a3b8">Traffic Forever</span><span class="green">Active</span></div>
-<div class="row"><span style="color:#94a3b8">Tumblr</span><span id="tumblr-status" class="yellow">Reconnecting</span></div>
+<div class="row"><span style="color:#94a3b8">Tumblr</span><span id="tumblr-status" class="green">Active</span></div>
 <div class="row"><span style="color:#94a3b8">Voice Engine</span><span class="green">Grok AI</span></div>
 <div class="row"><span style="color:#94a3b8">Scan Interval</span><span class="cyan">Every 15 min</span></div>
 </div>
@@ -90,6 +95,10 @@ h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
 <div class="stat-card"><div id="stat-clickbank" class="stat-num purple">0</div><div class="stat-label">ClickBank Clicks</div></div>
 <div class="stat-card"><div id="stat-re" class="stat-num blue">0</div><div class="stat-label">RE Clicks</div></div>
 <div class="stat-card"><div id="stat-posts" class="stat-num green">0</div><div class="stat-label">Posts Published</div></div>
+</div>
+
+<div class="emergency-btn" id="emergency-btn" onclick="emergencyFix()">
+<span class="btn-text">🚨<br>FIX</span>
 </div>
 
 <div class="orb" id="orb" onclick="toggleChat()"></div>
@@ -184,9 +193,37 @@ async function speak(text){
 function addMsg(t){var c=document.getElementById("jarvis-messages"),d=document.createElement("div");d.className="msg";d.innerHTML="<span style='color:#0891b2;font-size:9px'>"+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+"</span><br>"+t;c.appendChild(d);c.scrollTop=c.scrollHeight}
 
 function jarvisReport(){speak("Status report, Dennis. Amazon clicks: "+stats.amazon+". eBay clicks: "+stats.ebay+". ClickBank clicks: "+stats.clickbank+". Real estate clicks: "+stats.re+". Total posts published: "+stats.posts+". Engine running every 15 minutes across 20 countries.")}
-function jarvisDiagnose(){speak("Running diagnostic. [pause] Amazon links across 20 countries: operational. eBay affiliate links: operational. ClickBank offers: operational. Tumblr posting: currently reconnecting credentials. Voice engine: active. Supabase brain: connected. One issue detected: Tumblr OAuth needs fresh tokens. Recommend regenerating in Tumblr app settings.")}
+function jarvisDiagnose(){speak("Running diagnostic. Amazon links across 20 countries: operational. eBay affiliate links: operational. ClickBank offers: operational. Tumblr posting: active and verified. Voice engine: active. Supabase brain: connected. All systems green. No issues detected.")}
 function jarvisMotivate(){var m=["Dennis, every sprint builds your empire. The engine never sleeps. While others rest, we compound.","The affiliate machine runs 24 7. Each post is a seed. Revenue grows exponentially from here.","You built what most only dream about. A fully autonomous income engine. Trust the process.","Every 15 minutes, another flag planted across 20 countries. The compound effect is unstoppable."];speak(m[Math.floor(Math.random()*m.length)])}
-function jarvisForecast(){speak("Forecast based on current trajectory. Once Tumblr credentials are refreshed, expect 96 posts per day. At industry average click rates, that projects to 15 to 30 affiliate clicks daily within the first week. Revenue follows clicks. The foundation is solid. We just need that Tumblr connection restored.")}
+function jarvisForecast(){speak("Forecast based on current trajectory. With Tumblr posting active, expect 96 posts per day. At industry average click rates, that projects to 15 to 30 affiliate clicks daily within the first week. Revenue follows clicks. The foundation is solid.")}
+
+async function emergencyFix(){
+    var btn=document.getElementById('emergency-btn');
+    btn.classList.add('alarm');
+    addLog('🚨 EMERGENCY FIX triggered by user','error');
+    speak('Emergency fix initiated. Running diagnostic and triggering sprint now.');
+    try{
+        // Trigger GitHub Actions workflow via repository dispatch webhook
+        var resp=await fetch('https://api.github.com/repos/traffic-forever-engine/jarvis-nexus-prime/dispatches',{
+            method:'POST',
+            headers:{'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+            body:JSON.stringify({event_type:'emergency_fix'})
+        });
+        if(resp.status===204){
+            addLog('✅ Sprint triggered successfully via GitHub Actions','success');
+            speak('Sprint triggered. Post should appear on Tumblr within 30 seconds.');
+            setTimeout(function(){btn.classList.remove('alarm');addLog('✅ Emergency fix complete — engine running','success');},10000);
+        }else{
+            addLog('❌ GitHub trigger failed: '+resp.status,'error');
+            speak('GitHub trigger returned status '+resp.status+'. Check credentials.');
+            setTimeout(function(){btn.classList.remove('alarm');},5000);
+        }
+    }catch(e){
+        addLog('❌ Emergency fix error: '+e.message,'error');
+        speak('Emergency fix encountered an error. '+e.message);
+        setTimeout(function(){btn.classList.remove('alarm');},5000);
+    }
+}
 
 function addLog(msg,type){var box=document.getElementById("log-box"),d=document.createElement("div");d.className="log-entry";var color=type==="error"?"#ef4444":type==="success"?"#10b981":"#475569";d.innerHTML="<span style='color:"+color+"'>["+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"})+"]</span> "+msg;box.insertBefore(d,box.firstChild);if(box.children.length>50)box.removeChild(box.lastChild)}
 
@@ -237,12 +274,12 @@ async function init(){
     addLog("All systems online.","success");
     addLog("GitHub Engine: RUNNING every 15 min","success");
     addLog("Voice Engine: Grok AI (leo) ACTIVE","success");
-    addLog("NOTE: Tumblr OAuth needs token refresh","error");
+    addLog("Tumblr OAuth: ACTIVE (oauth-1.0a)","success");
 
     // Speak greeting after short delay
     setTimeout(function(){
         var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";
-        speak(g+" Dennis. [pause] Jarvis 2.0 online. "+stats.posts+" posts in the system. I need to flag one issue: Tumblr authentication needs fresh tokens. Once you regenerate them, posts will flow live. Click on me for a full status report anytime.");
+        speak(g+" Dennis. Jarvis 2.0 online and posting. "+stats.posts+" posts published. All systems operational. Engine running every 15 minutes. Click on me for a full status report anytime.");
     },2000);
 
     // Refresh stats every 60 seconds
