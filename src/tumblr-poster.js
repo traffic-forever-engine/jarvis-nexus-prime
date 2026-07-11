@@ -2,12 +2,9 @@
  * Jarvis 2.0 Nexus Prime - Tumblr Poster
  * 
  * Posts content to Tumblr using their v2 API.
- * Uses OAuth 1.0a for authentication.
+ * Uses the `oauth-1.0a` npm package for proper OAuth 1.0a signing.
  * 
- * LIVE MODE — No simulation. If Tumblr creds are missing,
- * content is still logged as published to Supabase activity_log.
- * 
- * Required secrets:
+ * Required env vars:
  * - TUMBLR_CONSUMER_KEY
  * - TUMBLR_CONSUMER_SECRET
  * - TUMBLR_TOKEN
@@ -16,102 +13,93 @@
  */
 
 import crypto from 'crypto';
+import OAuth from 'oauth-1.0a';
 
 const TUMBLR_API_BASE = 'https://api.tumblr.com/v2';
 
 /**
- * Generate OAuth 1.0a signature
+ * Create OAuth 1.0a instance
  */
-function generateOAuthSignature(method, url, params, consumerSecret, tokenSecret) {
-  const sortedParams = Object.keys(params).sort().map(k => 
-    `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`
-  ).join('&');
-  
-  const signatureBase = [
-    method.toUpperCase(),
-    encodeURIComponent(url),
-    encodeURIComponent(sortedParams)
-  ].join('&');
-  
-  const signingKey = `${encodeURIComponent(consumerSecret)}&${encodeURIComponent(tokenSecret)}`;
-  
-  return crypto.createHmac('sha1', signingKey)
-    .update(signatureBase)
-    .digest('base64');
-}
-
-/**
- * Generate OAuth 1.0a Authorization header
- */
-function generateOAuthHeader(method, url, bodyParams = {}) {
+function createOAuth() {
   const consumerKey = process.env.TUMBLR_CONSUMER_KEY;
   const consumerSecret = process.env.TUMBLR_CONSUMER_SECRET;
-  const token = process.env.TUMBLR_TOKEN;
-  const tokenSecret = process.env.TUMBLR_TOKEN_SECRET;
-  
-  if (!consumerKey || !consumerSecret || !token || !tokenSecret) {
-    throw new Error('Tumblr OAuth credentials not configured');
+
+  if (!consumerKey || !consumerSecret) {
+    throw new Error('Tumblr OAuth consumer credentials not configured');
   }
-  
-  const oauthParams = {
-    oauth_consumer_key: consumerKey,
-    oauth_nonce: crypto.randomBytes(16).toString('hex'),
-    oauth_signature_method: 'HMAC-SHA1',
-    oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
-    oauth_token: token,
-    oauth_version: '1.0'
-  };
-  
-  const allParams = { ...oauthParams, ...bodyParams };
-  const signature = generateOAuthSignature(method, url, allParams, consumerSecret, tokenSecret);
-  oauthParams.oauth_signature = signature;
-  
-  const headerParts = Object.keys(oauthParams).sort().map(k => 
-    `${encodeURIComponent(k)}="${encodeURIComponent(oauthParams[k])}"`
-  ).join(', ');
-  
-  return `OAuth ${headerParts}`;
+
+  return OAuth({
+    consumer: {
+      key: consumerKey,
+      secret: consumerSecret
+    },
+    signature_method: 'HMAC-SHA1',
+    hash_function(baseString, key) {
+      return crypto.createHmac('sha1', key).update(baseString).digest('base64');
+    }
+  });
 }
 
 /**
  * Post text content to Tumblr
  */
 async function postToTumblr(content) {
+  const token = process.env.TUMBLR_TOKEN;
+  const tokenSecret = process.env.TUMBLR_TOKEN_SECRET;
   const blogName = process.env.TUMBLR_BLOG_NAME || 'traffic-forever';
+
+  if (!token || !tokenSecret) {
+    throw new Error('Tumblr OAuth token credentials not configured');
+  }
+
   const url = `${TUMBLR_API_BASE}/blog/${blogName}/post`;
-  
+
   // Determine language — alternate between EN and FR
   const useFrench = Math.random() < 0.4; // 40% French posts
   const postBody = useFrench ? content.postFr : content.postEn;
   const title = useFrench ? content.titleFr : content.titleEn;
-  
+
   const bodyParams = {
     type: 'text',
     title: title,
     body: postBody,
-    tags: content.type === 'affiliate' 
+    tags: content.type === 'affiliate'
       ? 'affiliate,deals,recommended,shopping,review'
       : content.type === 'real-estate'
         ? 'realestate,newbrunswick,canada,property,homes'
         : 'onlinebusiness,marketing,income,entrepreneur',
     format: 'markdown'
   };
-  
+
   try {
-    const authHeader = generateOAuthHeader('POST', url, bodyParams);
-    
+    const oauth = createOAuth();
+
+    const requestData = {
+      url: url,
+      method: 'POST',
+      data: bodyParams
+    };
+
+    const tokenData = {
+      key: token,
+      secret: tokenSecret
+    };
+
+    // Generate the Authorization header
+    const authHeader = oauth.toHeader(oauth.authorize(requestData, tokenData));
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        'Authorization': authHeader,
+        ...authHeader,
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: new URLSearchParams(bodyParams).toString()
     });
-    
+
     const data = await response.json();
-    
-    if (response.ok && data.meta?.status === 201) {
+
+    if (response.ok && (data.meta?.status === 201 || data.meta?.status === 200)) {
       console.log(`✅ Tumblr post published: ${title} (${useFrench ? 'FR' : 'EN'})`);
       return {
         success: true,
@@ -131,26 +119,21 @@ async function postToTumblr(content) {
 
 /**
  * LIVE MODE: Post to Tumblr if credentials exist.
- * If no Tumblr creds, content is still counted as published
- * (content is generated and tracked — Tumblr is just one distribution channel).
  */
 async function postToTumblrOrSimulate(content) {
-  const hasCredentials = process.env.TUMBLR_CONSUMER_KEY && 
-                         process.env.TUMBLR_TOKEN;
-  
+  const hasCredentials = process.env.TUMBLR_CONSUMER_KEY &&
+    process.env.TUMBLR_TOKEN;
+
   if (hasCredentials) {
     return await postToTumblr(content);
   }
-  
-  // No Tumblr creds — still count as live content generated
-  // The content exists, affiliate links are active, stats are real
-  console.log(`📝 [LIVE] Content generated: "${content.titleEn}" — Tumblr distribution pending (add API keys to activate)`);
+
+  // No Tumblr creds — log but don't post
+  console.log(`📝 [NO CREDS] Content generated: "${content.titleEn}" — Tumblr posting skipped (add API keys to activate)`);
   return {
-    success: true,
-    postId: `live-${Date.now()}`,
-    language: Math.random() < 0.4 ? 'FR' : 'EN',
-    platform: 'content-engine',
-    simulated: false
+    success: false,
+    error: 'No Tumblr credentials configured',
+    platform: 'tumblr'
   };
 }
 
