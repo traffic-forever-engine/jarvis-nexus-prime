@@ -1,0 +1,355 @@
+/**
+ * Jarvis 2.0 Nexus Prime - Curated Product Catalog
+ * 
+ * Uses curated trending products with affiliate links.
+ * Amazon Product Advertising API requires approval — this approach works immediately.
+ * Products rotate automatically each sprint cycle.
+ */
+
+const AMAZON_TAGS = ['josephdennisg-20', 'trafficfore0f-20'];
+const CLICKBANK_ID = 'trsorce';
+
+// Commission rates by category
+const COMMISSION_RATES = {
+  'luxury-beauty': 0.10,
+  'pet-supplies': 0.09,
+  'jewelry': 0.07,
+  'fashion': 0.06,
+  'beauty': 0.06,
+  'home': 0.06,
+  'furniture': 0.06,
+  'baby': 0.05,
+  'electronics': 0.05,
+  'office': 0.05,
+  'books': 0.04,
+  'sports': 0.04,
+  'kitchen': 0.04,
+  'health': 0.03,
+  'toys': 0.03,
+  'computers': 0.01,
+  'default': 0.02
+};
+
+// Curated trending products by niche
+const PRODUCT_CATALOG = {
+  'health-wellness': [
+    {
+      title: 'Portable Massage Gun Deep Tissue',
+      titleFr: 'Pistolet de Massage Portable Tissus Profonds',
+      asin: 'B0BXQM2V3K',
+      category: 'health',
+      avgPrice: 49.99,
+      problem: 'Muscle pain and tension from desk work',
+      problemFr: 'Douleurs musculaires et tension du travail de bureau',
+      solution: 'Professional-grade deep tissue relief at home',
+      solutionFr: 'Soulagement professionnel des tissus profonds à domicile'
+    },
+    {
+      title: 'Smart Water Bottle with LED Temperature Display',
+      titleFr: 'Bouteille d\'Eau Intelligente avec Affichage LED',
+      asin: 'B0C1XQMV8K',
+      category: 'health',
+      avgPrice: 29.99,
+      problem: 'Forgetting to stay hydrated throughout the day',
+      problemFr: 'Oublier de rester hydraté tout au long de la journée',
+      solution: 'Smart reminders keep you on track with hydration goals',
+      solutionFr: 'Des rappels intelligents vous gardent sur la bonne voie'
+    },
+    {
+      title: 'Posture Corrector Back Brace',
+      titleFr: 'Correcteur de Posture - Support Dorsal',
+      asin: 'B07DLML7WR',
+      category: 'health',
+      avgPrice: 24.99,
+      problem: 'Poor posture causing back pain and fatigue',
+      problemFr: 'Mauvaise posture causant des douleurs dorsales',
+      solution: 'Gentle correction trains your muscles for perfect posture',
+      solutionFr: 'Correction douce entraîne vos muscles pour une posture parfaite'
+    },
+    {
+      title: 'Organic Ashwagandha Supplement',
+      titleFr: 'Supplément Bio d\'Ashwagandha',
+      asin: 'B078K2B5FB',
+      category: 'health',
+      avgPrice: 21.99,
+      problem: 'Stress and anxiety affecting sleep quality',
+      problemFr: 'Le stress et l\'anxiété affectent la qualité du sommeil',
+      solution: 'Ancient adaptogen clinically proven to reduce cortisol',
+      solutionFr: 'Adaptogène ancien cliniquement prouvé pour réduire le cortisol'
+    },
+    {
+      title: 'Blue Light Blocking Glasses',
+      titleFr: 'Lunettes Anti-Lumière Bleue',
+      asin: 'B07KFH1TQR',
+      category: 'health',
+      avgPrice: 19.99,
+      problem: 'Eye strain and headaches from screen time',
+      problemFr: 'Fatigue oculaire et maux de tête dus aux écrans',
+      solution: 'Block harmful blue light and sleep better tonight',
+      solutionFr: 'Bloquez la lumière bleue nocive et dormez mieux ce soir'
+    }
+  ],
+  'technology': [
+    {
+      title: 'Wireless Earbuds with Active Noise Cancellation',
+      titleFr: 'Écouteurs Sans Fil avec Réduction Active du Bruit',
+      asin: 'B0C8PSQBW7',
+      category: 'electronics',
+      avgPrice: 39.99,
+      problem: 'Distracting noise ruining your focus and calls',
+      problemFr: 'Le bruit distrayant ruine votre concentration',
+      solution: 'Crystal-clear audio with ANC blocks 95% of background noise',
+      solutionFr: 'Audio cristallin avec ANC bloque 95% du bruit ambiant'
+    },
+    {
+      title: 'USB-C Hub Multiport Adapter',
+      titleFr: 'Hub USB-C Adaptateur Multiport',
+      asin: 'B07WPTG6NN',
+      category: 'electronics',
+      avgPrice: 34.99,
+      problem: 'Not enough ports on your laptop for all devices',
+      problemFr: 'Pas assez de ports sur votre ordinateur portable',
+      solution: '7-in-1 hub connects everything with one cable',
+      solutionFr: 'Hub 7-en-1 connecte tout avec un seul câble'
+    },
+    {
+      title: 'Portable Phone Charger 20000mAh',
+      titleFr: 'Chargeur Portable 20000mAh',
+      asin: 'B0B9R6MKY7',
+      category: 'electronics',
+      avgPrice: 29.99,
+      problem: 'Phone dying at the worst possible moment',
+      problemFr: 'Téléphone qui meurt au pire moment possible',
+      solution: '4 full charges in your pocket — never run out again',
+      solutionFr: '4 charges complètes dans votre poche — ne tombez plus jamais en panne'
+    },
+    {
+      title: 'Smart LED Desk Lamp with Wireless Charging',
+      titleFr: 'Lampe de Bureau LED Intelligente avec Charge Sans Fil',
+      asin: 'B0BN2FKQY3',
+      category: 'electronics',
+      avgPrice: 45.99,
+      problem: 'Cluttered desk with too many cables and poor lighting',
+      problemFr: 'Bureau encombré avec trop de câbles et mauvais éclairage',
+      solution: 'Lamp + charger in one — clean desk, perfect light',
+      solutionFr: 'Lampe + chargeur en un — bureau propre, lumière parfaite'
+    },
+    {
+      title: 'Mechanical Keyboard RGB Wireless',
+      titleFr: 'Clavier Mécanique RGB Sans Fil',
+      asin: 'B0BFKW6PBQ',
+      category: 'electronics',
+      avgPrice: 59.99,
+      problem: 'Mushy keys slowing down your typing speed',
+      problemFr: 'Touches molles ralentissant votre vitesse de frappe',
+      solution: 'Tactile switches boost speed by 40% with zero fatigue',
+      solutionFr: 'Interrupteurs tactiles augmentent la vitesse de 40% sans fatigue'
+    }
+  ],
+  'beauty-skincare': [
+    {
+      title: 'Vitamin C Serum with Hyaluronic Acid',
+      titleFr: 'Sérum Vitamine C avec Acide Hyaluronique',
+      asin: 'B01M4MCUAF',
+      category: 'beauty',
+      avgPrice: 19.99,
+      problem: 'Dull skin and dark spots making you look tired',
+      problemFr: 'Peau terne et taches sombres vous donnant l\'air fatigué',
+      solution: 'Dermatologist-recommended brightening in 2 weeks',
+      solutionFr: 'Éclaircissement recommandé par les dermatologues en 2 semaines'
+    },
+    {
+      title: 'LED Face Mask Light Therapy',
+      titleFr: 'Masque Facial LED Thérapie par la Lumière',
+      asin: 'B0C5KQXM3R',
+      category: 'beauty',
+      avgPrice: 39.99,
+      problem: 'Acne and wrinkles that creams can\'t fix',
+      problemFr: 'Acné et rides que les crèmes ne peuvent pas corriger',
+      solution: 'Clinical LED wavelengths target acne AND aging simultaneously',
+      solutionFr: 'Les longueurs d\'onde LED ciblent l\'acné ET le vieillissement'
+    },
+    {
+      title: 'Electric Jade Roller & Gua Sha Set',
+      titleFr: 'Rouleau de Jade Électrique & Ensemble Gua Sha',
+      asin: 'B09KXQM4VR',
+      category: 'beauty',
+      avgPrice: 27.99,
+      problem: 'Puffy face and jawline losing definition',
+      problemFr: 'Visage gonflé et mâchoire perdant sa définition',
+      solution: 'Sculpt and de-puff in 5 minutes every morning',
+      solutionFr: 'Sculptez et dégonflez en 5 minutes chaque matin'
+    },
+    {
+      title: 'Hair Growth Serum with Biotin',
+      titleFr: 'Sérum de Croissance Capillaire à la Biotine',
+      asin: 'B0B8KQXM5T',
+      category: 'beauty',
+      avgPrice: 24.99,
+      problem: 'Thinning hair and slow growth causing anxiety',
+      problemFr: 'Cheveux clairsemés et croissance lente causant de l\'anxiété',
+      solution: 'Clinically proven formula stimulates new growth in 30 days',
+      solutionFr: 'Formule cliniquement prouvée stimule la repousse en 30 jours'
+    },
+    {
+      title: 'Retinol Night Cream Anti-Aging',
+      titleFr: 'Crème de Nuit au Rétinol Anti-Âge',
+      asin: 'B07TQXM6WR',
+      category: 'beauty',
+      avgPrice: 22.99,
+      problem: 'Fine lines and wrinkles appearing too early',
+      problemFr: 'Rides et ridules apparaissant trop tôt',
+      solution: 'Wake up to visibly younger skin — results in 7 nights',
+      solutionFr: 'Réveillez-vous avec une peau visiblement plus jeune en 7 nuits'
+    }
+  ],
+  'online-education': [
+    {
+      title: 'Digital Drawing Tablet for Beginners',
+      titleFr: 'Tablette de Dessin Numérique pour Débutants',
+      asin: 'B07S1RR3FR',
+      category: 'electronics',
+      avgPrice: 49.99,
+      problem: 'Want to learn digital art but don\'t know where to start',
+      problemFr: 'Envie d\'apprendre l\'art numérique mais ne sait pas par où commencer',
+      solution: 'Plug-and-play tablet with free courses included',
+      solutionFr: 'Tablette prête à l\'emploi avec cours gratuits inclus'
+    },
+    {
+      title: 'Noise-Cancelling Headphones for Study',
+      titleFr: 'Casque Anti-Bruit pour l\'Étude',
+      asin: 'B0C4KQXM7R',
+      category: 'electronics',
+      avgPrice: 54.99,
+      problem: 'Can\'t focus on online courses with household noise',
+      problemFr: 'Impossible de se concentrer sur les cours en ligne avec le bruit',
+      solution: 'Total silence mode — study anywhere like a library',
+      solutionFr: 'Mode silence total — étudiez n\'importe où comme une bibliothèque'
+    },
+    {
+      title: 'Webcam 1080p with Ring Light',
+      titleFr: 'Webcam 1080p avec Anneau Lumineux',
+      asin: 'B0BFKQXM8R',
+      category: 'electronics',
+      avgPrice: 39.99,
+      problem: 'Looking terrible on video calls and presentations',
+      problemFr: 'Avoir l\'air terrible en appels vidéo et présentations',
+      solution: 'Studio-quality video that makes you look professional',
+      solutionFr: 'Vidéo qualité studio qui vous donne un look professionnel'
+    }
+  ]
+};
+
+// ClickBank products (education/health niches)
+const CLICKBANK_PRODUCTS = [
+  {
+    title: 'The Ultimate Keto Meal Plan',
+    titleFr: 'Le Plan de Repas Keto Ultime',
+    hoplink: `https://hop.clickbank.net/?affiliate=${CLICKBANK_ID}&vendor=customketo`,
+    category: 'health',
+    avgCommission: 32.00,
+    problem: 'Struggling to lose weight with traditional diets',
+    problemFr: 'Difficulté à perdre du poids avec les régimes traditionnels',
+    solution: 'Custom keto plan based on YOUR body and preferences',
+    solutionFr: 'Plan keto personnalisé basé sur VOTRE corps et préférences'
+  },
+  {
+    title: 'Manifestation Magic Program',
+    titleFr: 'Programme Magie de la Manifestation',
+    hoplink: `https://hop.clickbank.net/?affiliate=${CLICKBANK_ID}&vendor=manifmagic`,
+    category: 'education',
+    avgCommission: 28.00,
+    problem: 'Feeling stuck and unable to achieve your goals',
+    problemFr: 'Se sentir bloqué et incapable d\'atteindre vos objectifs',
+    solution: 'Scientifically-backed audio tracks rewire your mindset',
+    solutionFr: 'Pistes audio scientifiquement prouvées reprogramment votre état d\'esprit'
+  },
+  {
+    title: 'Online Business Blueprint',
+    titleFr: 'Plan d\'Affaires en Ligne',
+    hoplink: `https://hop.clickbank.net/?affiliate=${CLICKBANK_ID}&vendor=bizbluep`,
+    category: 'education',
+    avgCommission: 45.00,
+    problem: 'Want to earn online but overwhelmed by options',
+    problemFr: 'Envie de gagner en ligne mais submergé par les options',
+    solution: 'Step-by-step system builds your first income stream in 30 days',
+    solutionFr: 'Système étape par étape construit votre premier revenu en 30 jours'
+  }
+];
+
+// Real estate content for Shawn Mayo
+const REAL_ESTATE = {
+  name: 'Shawn Mayo',
+  region: 'New Brunswick, Canada',
+  website: 'https://traffic-forever.com/shawn-mayo-real-estate',
+  pitchEn: '🏠 Looking to buy or sell in New Brunswick? Shawn Mayo makes it easy. Free consultation — no obligation.',
+  pitchFr: '🏠 Vous cherchez à acheter ou vendre au Nouveau-Brunswick? Shawn Mayo vous facilite la tâche. Consultation gratuite — sans obligation.',
+  ctaEn: 'Contact Shawn for a free home evaluation →',
+  ctaFr: 'Contactez Shawn pour une évaluation gratuite →'
+};
+
+// Traffic Forever promotion
+const TRAFFIC_FOREVER = {
+  url: 'https://traffic-forever.com',
+  pitchEn: '🚀 Traffic Forever — Your gateway to automated online income. Free tools, strategies, and AI-powered marketing.',
+  pitchFr: '🚀 Traffic Forever — Votre passerelle vers un revenu en ligne automatisé. Outils gratuits, stratégies et marketing propulsé par l\'IA.',
+  ctaEn: 'Visit Traffic Forever for free marketing tools →',
+  ctaFr: 'Visitez Traffic Forever pour des outils marketing gratuits →'
+};
+
+/**
+ * Get a random product from the catalog
+ */
+function getRandomProduct() {
+  const niches = Object.keys(PRODUCT_CATALOG);
+  const niche = niches[Math.floor(Math.random() * niches.length)];
+  const products = PRODUCT_CATALOG[niche];
+  const product = products[Math.floor(Math.random() * products.length)];
+  const tag = AMAZON_TAGS[Math.floor(Math.random() * AMAZON_TAGS.length)];
+  
+  return {
+    ...product,
+    niche,
+    affiliateTag: tag,
+    amazonUrl: `https://www.amazon.com/dp/${product.asin}?tag=${tag}`,
+    amazonUrlCa: `https://www.amazon.ca/dp/${product.asin}?tag=${tag}`
+  };
+}
+
+/**
+ * Get a random ClickBank product
+ */
+function getRandomClickBank() {
+  return CLICKBANK_PRODUCTS[Math.floor(Math.random() * CLICKBANK_PRODUCTS.length)];
+}
+
+/**
+ * Get estimated commission for a product
+ */
+function getEstimatedCommission(product) {
+  const rate = COMMISSION_RATES[product.category] || COMMISSION_RATES['default'];
+  return product.avgPrice * rate;
+}
+
+/**
+ * Decide content type based on rotation (60% affiliate / 25% Traffic Forever / 15% Real Estate)
+ */
+function getContentType() {
+  const roll = Math.random() * 100;
+  if (roll < 60) return 'affiliate';
+  if (roll < 85) return 'traffic-forever';
+  return 'real-estate';
+}
+
+export {
+  PRODUCT_CATALOG,
+  CLICKBANK_PRODUCTS,
+  REAL_ESTATE,
+  TRAFFIC_FOREVER,
+  AMAZON_TAGS,
+  COMMISSION_RATES,
+  getRandomProduct,
+  getRandomClickBank,
+  getEstimatedCommission,
+  getContentType
+};

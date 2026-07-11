@@ -1,0 +1,19 @@
+{
+  "name": "jarvis-nexus-prime-engine",
+  "version": "2.0.0",
+  "description": "Jarvis 2.0 Nexus Prime - Autonomous Affiliate Marketing Engine",
+  "main": "src/sprint.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/sprint.js",
+    "test": "node src/sprint.js --dry-run"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "private": true
+}
