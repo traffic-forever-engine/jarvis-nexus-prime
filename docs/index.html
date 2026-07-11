@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus Prime</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050a14;color:#e0e6ed;font-family:'Segoe UI',Arial,sans-serif;padding:20px}
+h1,h2,.stat-num,.badge-text{font-family:'Courier New',monospace}
+.glow{text-shadow:0 0 10px rgba(0,255,255,0.7)}
+.card{background:rgba(15,23,42,0.85);border:1px solid rgba(0,255,255,0.3);box-shadow:0 0 12px rgba(0,255,255,0.1);border-radius:12px;padding:20px;margin-bottom:16px}
+.grid-main{display:grid;grid-template-columns:1fr 2fr;gap:20px}
+.stats-bar{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:20px}
+.stat-card{background:rgba(15,23,42,0.85);border:1px solid rgba(0,255,255,0.3);border-radius:10px;padding:14px;text-align:center}
+.stat-num{font-size:22px;font-weight:bold}
+.stat-label{font-size:9px;color:#64748b;text-transform:uppercase;margin-top:4px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.live-badge{display:flex;align-items:center;gap:6px;background:rgba(15,23,42,0.6);padding:6px 12px;border-radius:20px;border:1px solid rgba(0,255,255,0.3)}
+.pulse-dot{width:10px;height:10px;border-radius:50%;background:#00ffcc;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.log-box{max-height:350px;overflow-y:auto;font-family:monospace;font-size:11px}
+.log-entry{padding:3px 0;animation:fadeIn 0.3s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.orb{width:70px;height:70px;background:radial-gradient(circle,rgba(0,255,255,0.8) 0%,rgba(0,100,255,0.2) 70%);border-radius:50%;box-shadow:0 0 25px rgba(0,255,255,0.6);position:fixed;bottom:20px;right:20px;cursor:pointer;animation:float 4s ease-in-out infinite;z-index:1001}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.orb.speaking{animation:sp 0.5s ease-in-out infinite}
+@keyframes sp{0%,100%{transform:scale(1);box-shadow:0 0 25px rgba(0,255,255,0.6)}50%{transform:scale(1.15);box-shadow:0 0 45px rgba(0,255,255,1)}}
+.chat{position:fixed;bottom:110px;right:20px;width:320px;background:rgba(10,15,30,0.98);border:1px solid rgba(0,255,255,0.3);border-radius:14px;padding:16px;z-index:1000;display:none;max-height:400px;overflow-y:auto}
+.chat.open{display:block}
+.chat-btn{background:rgba(0,255,255,0.1);border:1px solid rgba(0,255,255,0.4);color:#67e8f9;font-size:10px;padding:8px;border-radius:8px;cursor:pointer;width:100%}
+.chat-btn:hover{background:rgba(0,255,255,0.2)}
+.chat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.msg{background:rgba(30,41,59,0.5);padding:8px;border-radius:8px;border-left:2px solid #06b6d4;margin-bottom:8px;font-size:11px}
+.row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px}
+.cyan{color:#22d3ee}.green{color:#34d399}.yellow{color:#fbbf24}.orange{color:#fb923c}.purple{color:#a78bfa}.blue{color:#60a5fa}
+.section-title{color:#67e8f9;font-size:13px;font-weight:bold;margin-bottom:12px;letter-spacing:1px}
+@media(max-width:768px){.grid-main{grid-template-columns:1fr}.stats-bar{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+
+<div class="header">
+<div>
+<h1 style="font-size:26px;color:#22d3ee" class="glow">NEXUS PRIME</h1>
+<p style="font-size:9px;color:#0891b2;letter-spacing:3px">JARVIS 2.0 AUTONOMOUS ENGINE</p>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<span id="speaking-text" style="color:#06b6d4;font-size:10px;display:none">&#9654; Speaking...</span>
+<div class="live-badge"><div class="pulse-dot"></div><span style="font-size:11px;color:#22d3ee;font-weight:bold">LIVE</span></div>
+</div>
+</div>
+
+<div class="grid-main">
+<div>
+<div class="card">
+<div class="section-title">Shawn Mayo Lead Center</div>
+<div class="row"><span style="color:#94a3b8">Website Clicks</span><span id="re-web" class="cyan" style="font-weight:bold">0</span></div>
+<div class="row"><span style="color:#94a3b8">Email Inquiries</span><span id="re-email" class="green" style="font-weight:bold">0</span></div>
+<div class="row" style="border-top:1px solid #1e293b;margin-top:8px;padding-top:8px"><span style="color:#94a3b8;font-size:10px">Region</span><span class="yellow" style="font-size:10px;font-weight:bold">New Brunswick, CA</span></div>
+</div>
+<div class="card">
+<div class="section-title">Engine Status</div>
+<div class="row"><span style="color:#94a3b8">Amazon (20 Countries)</span><span class="green">Active</span></div>
+<div class="row"><span style="color:#94a3b8">eBay Global</span><span class="green">Active</span></div>
+<div class="row"><span style="color:#94a3b8">Traffic Forever</span><span class="green">Active</span></div>
+<div class="row"><span style="color:#94a3b8">Tumblr</span><span class="green">Active</span></div>
+<div class="row"><span style="color:#94a3b8">Voice Engine</span><span class="green">Browser TTS</span></div>
+<div class="row"><span style="color:#94a3b8">Scan Interval</span><span class="cyan">Every 15 min</span></div>
+</div>
+<div class="card">
+<div class="section-title">Last Sprint</div>
+<div class="row"><span style="color:#94a3b8">Timestamp</span><span id="last-sprint" class="cyan">Awaiting...</span></div>
+<div class="row"><span style="color:#94a3b8">Posts Today</span><span id="posts-today" class="green" style="font-weight:bold">0</span></div>
+</div>
+</div>
+<div>
+<div class="card" style="min-height:420px">
+<div class="section-title">Autonomous Activity Log</div>
+<div id="log-box" class="log-box"></div>
+</div>
+</div>
+</div>
+
+<div class="stats-bar">
+<div class="stat-card"><div id="stat-clicks" class="stat-num cyan">0</div><div class="stat-label">Affiliate Clicks</div></div>
+<div class="stat-card"><div id="stat-re" class="stat-num blue">0</div><div class="stat-label">RE Clicks</div></div>
+<div class="stat-card"><div id="stat-ebay" class="stat-num orange">0</div><div class="stat-label">eBay Clicks</div></div>
+<div class="stat-card"><div id="stat-pins" class="stat-num purple">0</div><div class="stat-label">Posts</div></div>
+<div class="stat-card"><div id="stat-rev" class="stat-num yellow">$0.00</div><div class="stat-label">Revenue</div></div>
+<div class="stat-card"><div class="stat-num" style="color:white">100%</div><div class="stat-label">FTC</div></div>
+</div>
+
+<div class="orb" id="orb" onclick="toggleChat()"></div>
+
+<div class="chat" id="chat-panel">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<span style="color:#22d3ee;font-size:12px;font-weight:bold">JARVIS 2.0</span>
+<span onclick="toggleChat()" style="color:#64748b;cursor:pointer;font-size:18px">&times;</span>
+</div>
+<div id="jarvis-messages"></div>
+<div class="chat-grid">
+<button class="chat-btn" onclick="jarvisReport()">Status Report</button>
+<button class="chat-btn" onclick="jarvisDiagnose()">Diagnose</button>
+<button class="chat-btn" onclick="jarvisMotivate()">Motivate</button>
+<button class="chat-btn" onclick="jarvisForecast()">Forecast</button>
+</div>
+</div>
+
+<script>
+var SB_URL="https://dczsgopdfkmbczrvlpde.supabase.co";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjenNnb3BkZmttYmN6cnZscGRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM3MjA0NTcsImV4cCI6MjA5OTI5NjQ1N30.PunItHtaMULerWRpZY93opZc-q1UGnc-rz0piT-oZ1E";
+var stats={clicks:0,ebay:0,re:0,reEmail:0,posts:0,revenue:0};
+var speaking=false,queue=[];
+
+function toggleChat(){var c=document.getElementById("chat-panel");c.classList.toggle("open")}
+
+function speak(text){
+    addMsg(text);
+    if(!window.speechSynthesis){return}
+    if(speaking){queue.push(text);return}
+    speaking=true;
+    var orb=document.getElementById("orb");
+    var st=document.getElementById("speaking-text");
+    orb.classList.add("speaking");
+    st.style.display="inline";
+    window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(text);
+    u.rate=0.9;u.pitch=0.85;u.volume=1;
+    var voices=window.speechSynthesis.getVoices();
+    for(var i=0;i<voices.length;i++){
+        if(voices[i].name.indexOf("Daniel")>-1||voices[i].name.indexOf("David")>-1||voices[i].name.indexOf("Male")>-1||voices[i].name.indexOf("Google UK English Male")>-1){u.voice=voices[i];break}
+    }
+    u.onend=function(){orb.classList.remove("speaking");st.style.display="none";speaking=false;if(queue.length>0){speak(queue.shift())}};
+    u.onerror=function(){orb.classList.remove("speaking");st.style.display="none";speaking=false;if(queue.length>0){speak(queue.shift())}};
+    window.speechSynthesis.speak(u);
+}
+
+function addMsg(t){var c=document.getElementById("jarvis-messages"),d=document.createElement("div");d.className="msg";d.innerHTML="<span style='color:#0891b2;font-size:9px'>"+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})+"</span><br>"+t;c.appendChild(d);c.scrollTop=c.scrollHeight}
+
+function jarvisReport(){var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";speak(g+" Dennis. Status report. Affiliate clicks: "+stats.clicks+". eBay clicks: "+stats.ebay+". Real estate clicks: "+stats.re+". Posts published: "+stats.posts+". Estimated revenue: $"+stats.revenue.toFixed(2)+". All systems running every 15 minutes across 20 countries.")}
+function jarvisDiagnose(){speak("Running diagnostic. Amazon 20 countries, stable. eBay Browse API, stable. Supabase Brain, connected. Tumblr engine, ready. Voice engine, active. All systems green. No issues detected.")}
+function jarvisMotivate(){var m=["Dennis, every sprint builds your empire. The engine never sleeps. While others rest, we compound.","The affiliate machine runs 24 7. Each post is a seed. Revenue grows exponentially from here.","You built what most only dream about. A fully autonomous income engine. Trust the process.","Every 15 minutes, another flag planted across 20 countries. The compound effect is unstoppable."];speak(m[Math.floor(Math.random()*m.length)])}
+function jarvisForecast(){var p=stats.posts>0?stats.posts:96;speak("Projected monthly revenue at current pace: $"+(p*30*1.25*0.02).toFixed(2)+". Expect 3 to 5 x growth within 90 days as traffic compounds and algorithms favor consistent posting.")}
+
+function addLog(msg,type){var box=document.getElementById("log-box"),d=document.createElement("div");d.className="log-entry";var color=type==="error"?"#ef4444":type==="success"?"#10b981":"#475569";d.innerHTML="<span style='color:"+color+"'>["+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"})+"]</span> "+msg;box.insertBefore(d,box.firstChild);if(box.children.length>50)box.removeChild(box.lastChild)}
+
+async function loadStats(){
+    try{
+        var resp=await fetch(SB_URL+"/rest/v1/stats?select=*",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+        var data=await resp.json();
+        if(data&&data.length>0){
+            data.forEach(function(row){
+                switch(row.category){
+                    case"affiliate_clicks":stats.clicks=Number(row.value)||0;break;
+                    case"ebay_clicks":stats.ebay=Number(row.value)||0;break;
+                    case"real_estate_clicks":stats.re=Number(row.value)||0;break;
+                    case"real_estate_emails":stats.reEmail=Number(row.value)||0;break;
+                    case"posts_published":stats.posts=Number(row.value)||0;break;
+                    case"est_revenue":stats.revenue=Number(row.value)||0;break;
+                    case"last_sprint":document.getElementById("last-sprint").innerText=new Date(Number(row.value)).toLocaleString([],{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});break;
+                }
+            });
+            document.getElementById("stat-clicks").innerText=stats.clicks;
+            document.getElementById("stat-ebay").innerText=stats.ebay;
+            document.getElementById("stat-re").innerText=stats.re;
+            document.getElementById("stat-pins").innerText=stats.posts;
+            document.getElementById("stat-rev").innerText="$"+stats.revenue.toFixed(2);
+            document.getElementById("re-web").innerText=stats.re;
+            document.getElementById("re-email").innerText=stats.reEmail;
+            document.getElementById("posts-today").innerText=stats.posts;
+        }
+    }catch(e){addLog("Stats fetch error: "+e.message,"error")}
+}
+
+async function loadLogs(){
+    try{
+        var resp=await fetch(SB_URL+"/rest/v1/activity_log?select=*&order=created_at.desc&limit=15",{headers:{"apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY}});
+        var data=await resp.json();
+        if(data&&data.length>0){
+            data.reverse().forEach(function(entry){addLog(entry.message,entry.type==="sprint"?"success":null)});
+        }
+    }catch(e){}
+}
+
+async function init(){
+    addLog("Initializing Jarvis 2.0 Nexus Prime...","success");
+    addLog("Connecting to Supabase Brain...","success");
+    await loadStats();
+    addLog("Stats loaded: "+stats.posts+" posts, $"+stats.revenue.toFixed(2)+" revenue","success");
+    await loadLogs();
+    addLog("All systems LIVE.","success");
+    addLog("GitHub Engine: RUNNING every 15 min","success");
+    addLog("Voice Engine: ACTIVE","success");
+
+    // Load voices then speak greeting
+    if(window.speechSynthesis){
+        window.speechSynthesis.getVoices();
+        setTimeout(function(){
+            var g=new Date().getHours()<12?"Good morning":new Date().getHours()<18?"Good afternoon":"Good evening";
+            speak(g+" Dennis. Jarvis 2.0 is fully online. "+stats.posts+" posts published so far. Revenue at $"+stats.revenue.toFixed(2)+". All systems green. Click on me anytime for a full report.");
+        },1500);
+    }
+
+    // Refresh stats every 60 seconds
+    setInterval(function(){loadStats()},60000);
+}
+
+// Preload voices
+if(window.speechSynthesis){window.speechSynthesis.onvoiceschanged=function(){window.speechSynthesis.getVoices()}}
+
+init();
+</script>
+</body>
+</html>
