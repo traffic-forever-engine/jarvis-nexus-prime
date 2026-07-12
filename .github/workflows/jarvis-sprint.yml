@@ -7,6 +7,10 @@ on:
   repository_dispatch:
     types: [emergency_fix]
 
+concurrency:
+  group: jarvis-sprint
+  cancel-in-progress: false
+
 jobs:
   sprint:
     runs-on: ubuntu-latest
