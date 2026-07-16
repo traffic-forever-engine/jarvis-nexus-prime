@@ -155,8 +155,8 @@ const PRODUCT_CATALOG = {
       avgPrice: 19.99,
       problem: 'Dull skin and dark spots making you look tired',
       problemFr: 'Peau terne et taches sombres vous donnant l\'air fatigué',
-      solution: 'Dermatologist-recommended brightening in 2 weeks',
-      solutionFr: 'Éclaircissement recommandé par les dermatologues en 2 semaines'
+      solution: 'Vitamin C serum formulated to help brighten the look of dull skin',
+      solutionFr: 'Sérum à la vitamine C formulé pour aider à illuminer l\'apparence de la peau terne'
     },
     {
       title: 'LED Face Mask Light Therapy Device',
@@ -166,8 +166,8 @@ const PRODUCT_CATALOG = {
       avgPrice: 39.99,
       problem: 'Acne and wrinkles that creams can\'t fix',
       problemFr: 'Acné et rides que les crèmes ne peuvent pas corriger',
-      solution: 'Clinical LED wavelengths target acne AND aging simultaneously',
-      solutionFr: 'Les longueurs d\'onde LED ciblent l\'acné ET le vieillissement'
+      solution: 'LED light therapy mask designed to target signs of both acne and aging',
+      solutionFr: 'Masque de luminothérapie LED conçu pour cibler les signes d\'acné et de vieillissement'
     },
     {
       title: 'BAIMEI Jade Roller & Gua Sha Set',
@@ -188,8 +188,8 @@ const PRODUCT_CATALOG = {
       avgPrice: 24.99,
       problem: 'Thinning hair and slow growth causing anxiety',
       problemFr: 'Cheveux clairsemés et croissance lente causant de l\'anxiété',
-      solution: 'Clinically proven formula stimulates new growth in 30 days',
-      solutionFr: 'Formule cliniquement prouvée stimule la repousse en 30 jours'
+      solution: 'Biotin-based serum formulated to support healthier-looking hair over time',
+      solutionFr: 'Sérum à base de biotine formulé pour favoriser des cheveux à l\'apparence plus saine avec le temps'
     },
     {
       title: 'LilyAna Naturals Retinol Cream Anti-Aging',
@@ -250,8 +250,8 @@ const CLICKBANK_PRODUCTS = [
     avgCommission: 55.00,
     problem: 'Brain fog and lack of mental clarity holding you back',
     problemFr: 'Brouillard mental et manque de clarté vous retiennent',
-    solution: '7-minute audio backed by NASA research unlocks your genius potential',
-    solutionFr: 'Audio de 7 minutes soutenu par la recherche NASA débloque votre potentiel'
+    solution: 'A 7-minute daily audio track designed to help sharpen focus and mental clarity',
+    solutionFr: 'Une piste audio quotidienne de 7 minutes conçue pour aider à améliorer la concentration et la clarté mentale'
   },
   {
     title: 'Manifestation Magic Program',
@@ -261,8 +261,8 @@ const CLICKBANK_PRODUCTS = [
     avgCommission: 28.00,
     problem: 'Feeling stuck and unable to achieve your goals',
     problemFr: 'Se sentir bloqué et incapable d\'atteindre vos objectifs',
-    solution: 'Scientifically-backed audio tracks rewire your mindset',
-    solutionFr: 'Pistes audio scientifiquement prouvées reprogramment votre état d\'esprit'
+    solution: 'Audio tracks designed to help you build new habits and shift your mindset',
+    solutionFr: 'Pistes audio conçues pour vous aider à créer de nouvelles habitudes et changer d\'état d\'esprit'
   },
   {
     title: 'The Memory Wave - Sharpen Your Mind',
@@ -272,8 +272,8 @@ const CLICKBANK_PRODUCTS = [
     avgCommission: 45.00,
     problem: 'Memory getting worse with age — forgetting names and details',
     problemFr: 'Mémoire qui se détériore avec l\'âge — oublier noms et détails',
-    solution: 'Neuroscientist-designed soundwave restores sharp memory in 7 min/day',
-    solutionFr: 'Onde sonore conçue par un neuroscientifique restaure la mémoire en 7 min/jour'
+    solution: 'A 7-minute daily soundwave track designed to support focus and mental sharpness',
+    solutionFr: 'Une piste audio quotidienne de 7 minutes conçue pour soutenir la concentration et la vivacité d\'esprit'
   }
 ];
 
@@ -290,11 +290,11 @@ const REAL_ESTATE = {
 
 // Traffic Forever promotion
 const TRAFFIC_FOREVER = {
-  url: 'https://traffic-forever.com',
-  pitchEn: 'Traffic Forever — Your gateway to automated online income. Free tools, strategies, and AI-powered marketing.',
-  pitchFr: 'Traffic Forever — Votre passerelle vers un revenu en ligne automatisé. Outils gratuits, stratégies et marketing propulsé par l\'IA.',
-  ctaEn: 'Visit Traffic Forever for free marketing tools',
-  ctaFr: 'Visitez Traffic Forever pour des outils marketing gratuits'
+  url: 'https://www.traffic-forever.com',
+  pitchEn: 'Traffic Forever — a site in early development, currently featuring top-rated product picks.',
+  pitchFr: 'Traffic Forever — un site en développement, présentant actuellement une sélection de produits populaires.',
+  ctaEn: 'Check out Traffic Forever',
+  ctaFr: 'Découvrez Traffic Forever'
 };
 
 /**
@@ -332,13 +332,13 @@ function getEstimatedCommission(product) {
 }
 
 /**
- * Decide content type based on rotation (60% affiliate / 25% Traffic Forever / 15% Real Estate)
+ * Decide content type based on rotation (60% affiliate / 40% Traffic Forever)
+ * Real estate temporarily disabled: no confirmed real URL / honest copy yet.
  */
 function getContentType() {
   const roll = Math.random() * 100;
   if (roll < 60) return 'affiliate';
-  if (roll < 85) return 'traffic-forever';
-  return 'real-estate';
+  return 'traffic-forever';
 }
 
 export {

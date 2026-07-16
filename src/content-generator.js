@@ -132,24 +132,24 @@ function generateAffiliatePost() {
 }
 
 function generateTrafficForeverPost() {
-  const postEn = `<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Visit Traffic Forever →</b></a></p>
-<p>Want automated income streams? Traffic Forever gives you free tools, strategies, and AI-powered systems to grow online. 100% free to start.</p>
-<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Get Free Marketing Tools →</b></a></p>
-<p>#onlinebusiness #passiveincome #digitalmarketing #entrepreneur #sidehustle #makemoneyonline</p>`;
+  const postEn = `<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Check out Traffic Forever →</b></a></p>
+<p>${TRAFFIC_FOREVER.pitchEn}</p>
+<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Take a look →</b></a></p>
+<p>#deals #shopping #onlineshopping</p>`;
 
-  const postFr = `<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Visitez Traffic Forever →</b></a></p>
-<p>Vous voulez des revenus automatisés? Traffic Forever vous donne les outils gratuits et systèmes IA pour grandir en ligne. 100% gratuit.</p>
-<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Outils Marketing Gratuits →</b></a></p>
-<p>#businessenligne #revenuspassifs #marketingdigital #entrepreneur</p>`;
+  const postFr = `<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Découvrez Traffic Forever →</b></a></p>
+<p>${TRAFFIC_FOREVER.pitchFr}</p>
+<p>🚀 <a href="${TRAFFIC_FOREVER.url}"><b>Jetez un coup d'œil →</b></a></p>
+<p>#offres #magasinage #achatsenligne</p>`;
 
   return {
     type: 'traffic-forever',
-    titleEn: 'Traffic Forever - Automated Online Income',
-    titleFr: 'Traffic Forever - Revenu en Ligne Automatisé',
+    titleEn: 'Traffic Forever',
+    titleFr: 'Traffic Forever',
     postEn,
     postFr,
     link: TRAFFIC_FOREVER.url,
-    tags: 'onlinebusiness,passiveincome,digitalmarketing,entrepreneur,sidehustle,makemoneyonline',
+    tags: 'deals,shopping,onlineshopping',
     estimatedCommission: 0
   };
 }
@@ -182,7 +182,7 @@ function generateContent() {
   switch (contentType) {
     case 'affiliate': return generateAffiliatePost();
     case 'traffic-forever': return generateTrafficForeverPost();
-    case 'real-estate': return generateRealEstatePost();
+    // real-estate temporarily disabled: no confirmed real URL / honest copy yet
     default: return generateAffiliatePost();
   }
 }
