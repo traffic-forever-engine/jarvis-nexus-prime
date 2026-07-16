@@ -1,8 +1,8 @@
 name: Jarvis 2.0 Autonomous Sprint
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'  # Every 15 minutes
+  # schedule:
+  #   - cron: '*/15 * * * *'  # Every 15 minutes — paused, see commit message
   workflow_dispatch: # Manual trigger
   repository_dispatch:
     types: [emergency_fix]
